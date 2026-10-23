@@ -1,0 +1,15 @@
+---
+/*
+ * El botón de Google Play. Hoy dice "Muy pronto en" y no lleva a ningún lado.
+ * Cuando la app esté publicada, cámbialo por un
+ * <a class="boton" href="https://play.google.com/store/apps/details?id=..."> con "Descárgala en".
+ */
+interface Props {
+    chico?: boolean;
+}
+const { chico = false } = Astro.props;
+---
+<span class:list={["boton", "boton-pronto", { "boton-chico": chico }]}>
+    <svg class="ic" aria-hidden="true"><use href="#i-play" /></svg>
+    <span><small>Muy pronto en</small>Google Play</span>
+</span>

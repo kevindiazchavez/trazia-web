@@ -1,0 +1,37 @@
+---
+import Base from "../layouts/Base.astro";
+import Barra from "../components/Barra.astro";
+import Portada from "../components/Portada.astro";
+import QueHace from "../components/QueHace.astro";
+import ComoFunciona from "../components/ComoFunciona.astro";
+import Seguridad from "../components/Seguridad.astro";
+import Final from "../components/Final.astro";
+import Pie from "../components/Pie.astro";
+---
+<Base
+    titulo="Trazia · Qué bus tomar en El Salvador"
+    descripcion="Trazia te dice qué bus tomar en El Salvador: la ruta, dónde subir, dónde bajar y cuánto caminar, con avisos en vivo de la comunidad."
+>
+    <Barra />
+    <div class="marco">
+        <!-- Los degradados del fondo; animations.ts los mueve muy despacio. -->
+        <div class="manchas" aria-hidden="true">
+            <span class="mancha mancha-1" data-mancha></span>
+            <span class="mancha mancha-2" data-mancha></span>
+            <span class="mancha mancha-3" data-mancha></span>
+            <span class="mancha mancha-4" data-mancha></span>
+        </div>
+        <main>
+            <Portada />
+            <QueHace />
+            <ComoFunciona />
+            <Seguridad />
+            <Final />
+        </main>
+        <Pie />
+    </div>
+
+    <script>
+        import "../scripts/animations.ts";
+    </script>
+</Base>

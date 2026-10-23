@@ -1,0 +1,449 @@
+---
+/*
+ * El teléfono con pantallas de Trazia, dibujadas como las de la app (Android,
+ * tema oscuro). Por dentro mide siempre 296 × 604 y se achica con `escala`,
+ * así el texto de la pantalla no se desarma.
+ *
+ * `pantallas` dice qué se ve: una sola, o varias apiladas (la primera visible)
+ * que animations.ts va cambiando (data-vista), como en "Cómo funciona".
+ *   inicio       el inicio: saludo, buscador, "Cerca de ti", "La comunidad hoy"
+ *   opciones     el mapa con el viaje y la hoja de "Viajes encontrados";
+ *                la ruta se dibuja y el bus la recorre (data-tel-ruta, data-tel-bus)
+ *   itinerario   el viaje elegido, tramo por tramo
+ *   avisos       los avisos de la comunidad en una ruta
+ *   alerta       el botón de pánico con la alerta abierta; las ondas laten (data-pulso)
+ *
+ * El viaje de ejemplo es el de las capturas de la app: Metrocentro → Puerto
+ * de La Libertad, Ruta 44 + Ruta 102A.
+ */
+type Pantalla = "inicio" | "opciones" | "itinerario" | "avisos" | "alerta";
+interface Props {
+    escala?: number;
+    pantallas?: Pantalla[];
+}
+const { escala = 1, pantallas = ["opciones"] } = Astro.props;
+
+// El recorrido sobre el mapa, en píxeles de la pantalla (274 × 582).
+const RUTA = "M206 168 C196 170 186 172 178 178 C168 186 160 192 150 198 C132 208 114 220 104 238 C96 252 99 266 91 282 C85 294 80 304 74 316";
+
+const comunidad = [
+    { icono: "i-alerta", color: "var(--averia)", fondo: "rgba(245, 158, 11, .16)", valor: "12", texto: "Reportes de hoy" },
+    { icono: "i-velocimetro", color: "var(--verde)", fondo: "rgba(58, 176, 79, .16)", valor: "3", texto: "Alertas activas" },
+    { icono: "i-direcciones", color: "var(--desvio)", fondo: "rgba(59, 130, 246, .18)", valor: "2", texto: "Rutas que sigues" },
+];
+const tramos = [
+    { tipo: "pie", etiqueta: "A pie", dato: "4 min", texto: "Camina 364 m" },
+    { tipo: "bus", etiqueta: "Bus", dato: "12 min", precio: "$0.25", texto: "Sube a Ruta 44" },
+    { tipo: "parada", etiqueta: "Parada", texto: "Bájate de Ruta 44", detalle: "5,1 km · 12 min" },
+    { tipo: "pie", etiqueta: "Transbordo", texto: "Camina 460 m al siguiente bus" },
+    { tipo: "bus", etiqueta: "Bus", dato: "48 min", precio: "$1.50", texto: "Sube a Ruta 102A" },
+];
+const reportes = [
+    { icono: "i-semaforo", color: "var(--trafico)", titulo: "Tráfico pesado", lugar: "Alameda Roosevelt · hace 2 min", gracias: 5 },
+    { icono: "i-desvio", color: "var(--desvio)", titulo: "Desvío por obras", lugar: "Calle Arce · hace 9 min", gracias: 3 },
+    { icono: "i-averia", color: "var(--averia)", titulo: "Bus averiado", lugar: "Plaza Masferrer · hace 15 min", gracias: 2 },
+    { icono: "i-alerta", color: "var(--manejo)", titulo: "Manejo temerario", lugar: "Paseo El Carmen · hace 22 min", gracias: 7 },
+];
+---
+<div class="tel" style={`--escala: ${escala}`} data-telefono aria-hidden="true">
+    <div class="telefono">
+        <div class="pantalla">
+            <!-- La barra de estado: hora, señal, wifi y batería. -->
+            <div class="estado">
+                <b>10:24</b>
+                <span class="estado-iconos">
+                    <svg class="senal" viewBox="0 0 17 11"><rect x="0" y="7" width="3" height="4" rx="1" /><rect x="4.6" y="5" width="3" height="6" rx="1" /><rect x="9.2" y="2.5" width="3" height="8.5" rx="1" /><rect x="13.8" y="0" width="3" height="11" rx="1" /></svg>
+                    <svg class="wifi" viewBox="0 0 16 12"><path d="M8 2.6c2.3 0 4.4.9 6 2.4l1.3-1.4A10.6 10.6 0 0 0 8 .7C5.2.7 2.6 1.8.7 3.6L2 5c1.6-1.5 3.7-2.4 6-2.4zm0 3.7c1.3 0 2.5.5 3.4 1.3l1.3-1.4A6.8 6.8 0 0 0 8 4.4c-1.8 0-3.4.7-4.7 1.8l1.3 1.4c.9-.8 2.1-1.3 3.4-1.3zm0 3.6 1.9-2a2.8 2.8 0 0 0-3.8 0z" /></svg>
+                    <svg class="bateria" viewBox="0 0 27 13"><rect class="bateria-borde" x=".5" y=".5" width="23" height="12" rx="3.6" /><rect x="2.2" y="2.2" width="19.6" height="8.6" rx="2" /><path class="bateria-polo" d="M25 4.6v3.8c.9-.3 1.5-1 1.5-1.9s-.6-1.6-1.5-1.9z" /></svg>
+                </span>
+            </div>
+
+            {pantallas.map((p, i) => (
+                <div class:list={["vista", `v-${p}`]} data-vista={i}>
+                    {p === "inicio" && (
+                        <>
+                            <div class="saludo">
+                                <img src="/marca/trazia-logo.png" alt="" width="34" height="34" />
+                                <div><small>Buenos días</small><b>Andrea</b></div>
+                                <svg class="ic campanita"><use href="#i-campanita" /></svg>
+                            </div>
+                            <p class="pregunta">¿A dónde vas?</p>
+                            <div class="buscador"><span>Buscar rutas y transbordos</span><i><svg class="ic"><use href="#i-buscar" /></svg></i></div>
+                            <p class="seccion-app"><svg class="ic"><use href="#i-lugar" /></svg>Cerca de ti</p>
+                            <div class="mini-mapa">
+                                <svg viewBox="0 0 242 92" preserveAspectRatio="xMidYMid slice">
+                                    <rect width="242" height="92" class="m-fondo" />
+                                    <path class="m-zona" d="M0 60 L40 48 L70 70 L60 92 L0 92z M170 0 L242 0 L242 40 L200 30z" />
+                                    <path class="m-calle" d="M30 -5 L22 50 M60 30 L150 8 L200 -5 M118 40 L180 52 M150 8 L118 40" />
+                                    <path class="m-texto-calle" d="M0 70 L40 92" />
+                                    <path class="m-linea" d="M116 44 L108 100" />
+                                    <circle class="m-yo" cx="116" cy="44" r="5" />
+                                    <path class="m-pin" d="M125 36c-4 0-7 3-7 7 0 5 7 12 7 12s7-7 7-12c0-4-3-7-7-7z" />
+                                </svg>
+                            </div>
+                            <p class="seccion-app"><svg class="ic"><use href="#i-alerta" /></svg>La comunidad hoy<span>Detalles<svg class="ic"><use href="#i-chevron" /></svg></span></p>
+                            <div class="comunidad">
+                                {comunidad.map((c) => (
+                                    <div>
+                                        <i style={`--c: ${c.color}; --f: ${c.fondo}`}><svg class="ic"><use href={`#${c.icono}`} /></svg></i>
+                                        <b>{c.valor}</b>
+                                        <small>{c.texto}</small>
+                                    </div>
+                                ))}
+                            </div>
+                            <p class="seccion-app"><svg class="ic"><use href="#i-estrella" /></svg>Acceso rápido<span>Editar</span></p>
+                            <div class="accesos">
+                                <div><i style="--c: #d9ff6f; --f: #3a4220"><svg class="ic"><use href="#i-casa" /></svg></i>Casa</div>
+                                <div><i style="--c: #60a5fa; --f: #1e2b44"><svg class="ic"><use href="#i-trabajo" /></svg></i>Trabajo</div>
+                                <div class="agregar"><i style="--c: #b8bfbc; --f: #2a2f2d">+</i>Agregar</div>
+                            </div>
+                        </>
+                    )}
+
+                    {p === "opciones" && (
+                        <>
+                            <svg class="mapa" viewBox="0 0 274 582" preserveAspectRatio="xMidYMin slice">
+                                <rect width="274" height="582" class="m-fondo" />
+                                <path class="m-zona" d="M0 230 L40 210 L70 236 L52 270 L0 262z M214 200 L274 186 L274 250 L236 244z M120 250 L160 262 L150 300 L118 292z M0 120 L30 112 L44 140 L0 150z" />
+                                <path class="m-zona clara" d="M30 300 L70 290 L64 330 L20 330z M220 280 L262 270 L274 300 L232 312z" />
+                                <path class="m-carretera" d="M0 196 C60 186 120 176 200 160 L274 150 M120 150 C130 200 140 260 128 330 M180 120 C200 160 230 200 274 214 M0 290 C40 280 60 300 100 296" />
+                                <path class="m-cuadra" d="M184 150 h40 M186 160 h42 M190 170 h36 M196 140 v40 M206 138 v44 M216 140 v38 M140 186 h28 M142 194 h26 M150 180 v22 M160 180 v20" />
+                                <path class="ruta-brillo" d={RUTA} />
+                                <path class="ruta" d={RUTA} pathLength="1" data-tel-ruta />
+                                <text class="m-ciudad" x="190" y="196">San Salvador</text>
+                                <text class="m-ciudad chica" x="112" y="230">Santa Tecla</text>
+                                <text class="m-pueblo" x="28" y="178">Colón</text>
+                                <text class="m-pueblo" x="104" y="268">Zaragoza</text>
+                                <text class="m-pueblo" x="20" y="306">La Libertad</text>
+                                <circle class="m-transbordo" cx="150" cy="198" r="5" />
+                                <circle class="m-yo" cx="214" cy="172" r="4.5" />
+                                <path class="m-pin naranja" d="M206 150c-6 0-10 4.4-10 10 0 7.5 10 18 10 18s10-10.5 10-18c0-5.6-4.4-10-10-10z" />
+                                <path class="m-pin rojo" d="M74 296c-6 0-10 4.4-10 10 0 7.5 10 18 10 18s10-10.5 10-18c0-5.6-4.4-10-10-10z" />
+                                <g class="bus-tel" transform="translate(206 168)" data-tel-bus>
+                                    <circle class="halo" r="13" />
+                                    <circle class="cuerpo" r="9" />
+                                    <use href="#i-bus" x="-5.5" y="-5.5" width="11" height="11" fill="#0b0f0d" />
+                                </g>
+                            </svg>
+                            <div class="desde-hacia">
+                                <div><i class="punto verde"></i><span><small>Desde</small>Metrocentro</span><b><svg class="ic"><use href="#i-cerrar" /></svg></b></div>
+                                <div><i class="punto rojo"></i><span><small>Hacia</small>Puerto de La Libertad</span><b><svg class="ic"><use href="#i-cerrar" /></svg></b></div>
+                            </div>
+                            <svg class="sirena-app" viewBox="0 0 48 48">
+                                <path class="rayos" d="M24 3v7M10 8l4 6M38 8l-4 6M3 20l7 2M45 20l-7 2" />
+                                <path d="M12 38V29a12 12 0 0 1 24 0v9z" fill="#b91c1c" />
+                                <path d="M24 17a12 12 0 0 1 12 12v9h-7V29c0-5-2-9-5-12z" fill="#ef4444" />
+                                <path class="brillo" d="M27 23a6 6 0 0 1 4 6" />
+                                <rect x="8" y="38" width="32" height="6" rx="1" fill="#6b6b6b" />
+                            </svg>
+                            <div class="hoja">
+                                <i class="asa"></i>
+                                <small class="mayus">Viajes encontrados</small>
+                                <p class="hoja-titulo">2 opciones</p>
+                                <div class="opcion elegida">
+                                    <div class="opcion-fila"><small class="mayus">1. Con transbordo</small><span class="precio"><small>aprox.</small>$1.75</span></div>
+                                    <div class="opcion-fila"><b>1 h 8 min</b><small>44 + 102A · 972 m a pie</small></div>
+                                    <div class="barra-tramos"><i style="flex: 1"></i><i class="bus" style="flex: 3"></i><i class="bus" style="flex: 8"></i><i style="flex: .6"></i></div>
+                                </div>
+                                <div class="opcion">
+                                    <div class="opcion-fila"><small class="mayus">2. Con transbordo</small><span class="precio"><small>aprox.</small>$1.75</span></div>
+                                    <div class="opcion-fila"><b>1 h 8 min</b><small>4-T + 102A · 832 m a pie</small></div>
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {p === "itinerario" && (
+                        <>
+                            <div class="franja-mapa"><svg viewBox="0 0 274 90" preserveAspectRatio="xMidYMid slice"><rect width="274" height="90" class="m-fondo" /><path class="m-zona" d="M0 50 L60 36 L90 70 L0 90z M180 0 L274 0 L274 50z" /><path class="m-carretera" d="M0 70 C80 60 160 50 274 30" /><text class="m-ciudad" x="164" y="80">San Salvador</text><path class="m-pin naranja" d="M150 44c-6 0-10 4.4-10 10 0 7.5 10 18 10 18s10-10.5 10-18c0-5.6-4.4-10-10-10z" /></svg></div>
+                            <div class="hoja hoja-alta">
+                                <i class="asa"></i>
+                                <div class="itin-cabeza">
+                                    <div><small class="mayus">Opción 1 de 2</small><p class="hoja-titulo">Ruta 44 + Ruta 102A</p></div>
+                                    <span class="precio"><small>aprox.</small>$1.75<em>1 h 8 min total</em></span>
+                                </div>
+                                <div class="barra-tramos"><i style="flex: 1"></i><i class="bus" style="flex: 3"></i><i class="bus" style="flex: 8"></i><i style="flex: .6"></i></div>
+                                <div class="pastillas">
+                                    <span><svg class="ic"><use href="#i-bus" /></svg>2 buses</span>
+                                    <span><svg class="ic"><use href="#i-caminar" /></svg>972 m a pie</span>
+                                    <span><svg class="ic"><use href="#i-transbordo" /></svg>1 transbordo</span>
+                                </div>
+                                <small class="mayus">Itinerario</small>
+                                <ol class="itinerario">
+                                    {tramos.map((t) => (
+                                        <li class={`t-${t.tipo}`}>
+                                            <i><svg class="ic"><use href={t.tipo === "pie" ? "#i-caminar" : "#i-bus"} /></svg></i>
+                                            <div>
+                                                <span class="etiqueta">{t.etiqueta}</span>{t.dato && <span class="dato">{t.dato}</span>}{t.precio && <span class="dato verde">{t.precio}</span>}
+                                                <p>{t.texto}</p>
+                                                {t.detalle && <small>{t.detalle}</small>}
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ol>
+                                <div class="aceptar"><svg class="ic"><use href="#i-palomita" /></svg>Aceptar este viaje</div>
+                            </div>
+                        </>
+                    )}
+
+                    {p === "avisos" && (
+                        <>
+                            <div class="avisos-cabeza">
+                                <small class="mayus verde">Ruta 101</small>
+                                <p class="hoja-titulo">San Salvador – Santa Tecla</p>
+                                <div class="pestanas"><b class="activo">Avisos</b><b>Canal</b></div>
+                            </div>
+                            <ul class="reportes">
+                                {reportes.map((r) => (
+                                    <li>
+                                        <i style={`--c: ${r.color}`}><svg class="ic"><use href={`#${r.icono}`} /></svg></i>
+                                        <div>{r.titulo}<small>{r.lugar}</small></div>
+                                        <span class="gracias"><svg class="ic"><use href="#i-corazon" /></svg>{r.gracias}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <div class="puntos"><i><svg class="ic"><use href="#i-estrella" /></svg></i><div>+2 puntos<small>Tu último reporte ayudó a 5 personas</small></div></div>
+                            <div class="botones-aviso">
+                                <span class="reportar"><svg class="ic"><use href="#i-alerta" /></svg>Reportar</span>
+                                <span class="ver"><svg class="ic"><use href="#i-campana" /></svg>Ver reportes</span>
+                            </div>
+                        </>
+                    )}
+
+                    {p === "alerta" && (
+                        <>
+                            <small class="mayus rojo">Botón de pánico</small>
+                            <p class="hoja-titulo">Alerta activa</p>
+                            <div class="pulsador">
+                                <i data-pulso></i><i data-pulso></i><i data-pulso></i>
+                                <svg class="sirena-grande" viewBox="0 0 48 48">
+                                    <path class="rayos" d="M24 3v7M10 8l4 6M38 8l-4 6M3 20l7 2M45 20l-7 2" />
+                                    <path d="M12 38V29a12 12 0 0 1 24 0v9z" fill="#b91c1c" />
+                                    <path d="M24 17a12 12 0 0 1 12 12v9h-7V29c0-5-2-9-5-12z" fill="#ef4444" />
+                                    <path class="brillo" d="M27 23a6 6 0 0 1 4 6" />
+                                    <rect x="8" y="38" width="32" height="6" rx="1" fill="#6b6b6b" />
+                                </svg>
+                            </div>
+                            <div class="compartiendo">
+                                <i><svg class="ic"><use href="#i-lugar" /></svg></i>
+                                <div>Compartiendo tu ubicación<small>con el equipo de Trazia</small></div>
+                                <span class="en-vivo">En vivo</span>
+                            </div>
+                            <p class="nota-911">Ante una emergencia, llama también al 911.</p>
+                            <div class="cerrar-alerta">Cerrar alerta</div>
+                        </>
+                    )}
+
+                    {p !== "itinerario" && p !== "alerta" && (
+                        <>
+                            <nav class="menu-app">
+                                {[["i-casa", "Inicio"], ["i-mapa", "Mapa"], null, ["i-alerta", "Avisos"], ["i-persona", "Perfil"]].map((m) => {
+                                    if (!m) return <span class="hueco"></span>;
+                                    const activo = (p === "inicio" && m[1] === "Inicio") || (p === "opciones" && m[1] === "Mapa") || (p === "avisos" && m[1] === "Avisos");
+                                    return <span class:list={{ activo }}><svg class="ic"><use href={`#${m[0]}`} /></svg>{activo && m[1]}</span>;
+                                })}
+                            </nav>
+                            <span class="chat"><svg class="ic"><use href="#i-chat" /></svg></span>
+                        </>
+                    )}
+                </div>
+            ))}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* La app es oscura: dentro del teléfono vuelven sus colores (ui/theme/Color.kt). */
+    .tel {
+        --escala: 1; width: calc(296px * var(--escala)); height: calc(604px * var(--escala)); flex: none;
+        --app-fondo: #10231f; --app-tarjeta: #222222; --app-hoja: #1c1c1c; --app-borde: rgba(255, 255, 255, .07);
+        --app-suave: #b8bfbc; --app-tenue: #8b9290; --texto: #fff; --cian: #22d3ee;
+        color: var(--texto); text-align: left; line-height: 1.3;
+    }
+    .telefono {
+        width: 296px; height: 604px; border-radius: 48px; padding: 11px; position: relative;
+        transform: scale(var(--escala)); transform-origin: 0 0;
+        background: linear-gradient(150deg, #34443c, #0b120e 45%, #1f2b25);
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, .14), 0 0 0 6px rgba(17, 24, 39, .08), 0 50px 80px -34px rgba(17, 24, 39, .55), 0 0 120px -40px var(--brillo);
+    }
+    .telefono::after { /* El reflejo del vidrio. */
+        content: ""; position: absolute; inset: 11px; border-radius: 38px; pointer-events: none; z-index: 9;
+        background: linear-gradient(115deg, rgba(255, 255, 255, .1) 0%, transparent 26%, transparent 72%, rgba(255, 255, 255, .03) 100%);
+    }
+    .pantalla { width: 100%; height: 100%; border-radius: 38px; overflow: hidden; background: var(--app-fondo); position: relative; }
+    .pantalla::before { /* La isla de la cámara. */
+        content: ""; position: absolute; top: 10px; left: 50%; width: 86px; height: 25px; margin-left: -43px; border-radius: 99px; background: #050a07; z-index: 8;
+    }
+
+    /* ═══ Barra de estado ═══ */
+    .estado { position: absolute; z-index: 7; top: 14px; left: 30px; right: 20px; display: flex; justify-content: space-between; align-items: center; font-size: .76rem; letter-spacing: -.01em; }
+    .estado-iconos { display: flex; align-items: center; gap: 5px; }
+    .estado svg { fill: #fff; }
+    .senal { width: 16px; height: 10px; }
+    .wifi { width: 15px; height: 11px; }
+    .bateria { width: 24px; height: 12px; }
+    .bateria-borde { fill: none; stroke: #fff; stroke-width: 1; opacity: .45; }
+    .bateria-polo { opacity: .45; }
+
+    /* ═══ Pantallas apiladas: la primera se ve, las demás esperan ═══ */
+    .vista { position: absolute; inset: 0; display: flex; flex-direction: column; }
+    .vista + .vista { opacity: 0; visibility: hidden; }
+    .v-inicio, .v-avisos { padding: 50px 16px 0; }
+    .ic { width: 16px; height: 16px; }
+    small { display: block; font-weight: 500; color: var(--app-tenue); font-size: .62rem; }
+    .mayus { text-transform: uppercase; letter-spacing: .14em; font-size: .56rem; font-weight: 600; }
+    .verde { color: var(--verde); }
+    .hoja-titulo { margin: 2px 0 0; font-size: 1.12rem; font-weight: 500; letter-spacing: -.01em; }
+
+    /* La barra de abajo, flotante, con el botón verde del chat en el medio. */
+    .menu-app {
+        position: absolute; z-index: 5; left: 10px; right: 10px; bottom: 12px; height: 50px; display: flex; align-items: center; justify-content: space-between;
+        padding: 0 8px; border-radius: 26px; background: #15241f; border: 1px solid var(--app-borde); box-shadow: 0 -10px 24px -8px rgba(0, 0, 0, .6);
+    }
+    .menu-app span { height: 34px; min-width: 34px; display: flex; align-items: center; justify-content: center; gap: 5px; border-radius: 18px; color: var(--app-suave); font-size: .68rem; font-weight: 600; }
+    .menu-app .hueco { width: 46px; }
+    .menu-app .activo { padding: 0 12px; background: var(--lima); color: #1a1a1a; }
+    .menu-app .ic { width: 17px; height: 17px; }
+    .chat { position: absolute; z-index: 6; left: 50%; bottom: 40px; width: 46px; height: 46px; margin-left: -23px; border-radius: 50%; display: grid; place-items: center; background: var(--verde); color: #fff; box-shadow: 0 8px 20px -6px rgba(0, 0, 0, .7); }
+    .chat .ic { width: 20px; height: 20px; }
+
+    /* El mapa oscuro, como el de Google en la app. */
+    .m-fondo { fill: #142b24; }
+    .m-zona { fill: #183329; }
+    .m-zona.clara { fill: #1c3a2f; }
+    .m-carretera { fill: none; stroke: #2b4a40; stroke-width: 2; stroke-linecap: round; }
+    .m-cuadra { fill: none; stroke: #2a453c; stroke-width: 1; }
+    .m-calle { fill: none; stroke: #2c3f3a; stroke-width: 7; stroke-linecap: round; }
+    .m-texto-calle { fill: none; stroke: #33473f; stroke-width: 10; }
+    .m-linea { fill: none; stroke: var(--verde); stroke-width: 3; }
+    .m-yo { fill: var(--desvio); stroke: #fff; stroke-width: 2; }
+    .m-pin { fill: var(--averia); stroke: #0b0f0d; stroke-width: 1.5; }
+    .m-pin.naranja { fill: #f59e0b; }
+    .m-pin.rojo { fill: #ef4444; }
+    .m-transbordo { fill: var(--verde); stroke: #fff; stroke-width: 2; }
+    .m-ciudad { fill: #fff; font: 700 12px var(--letra); paint-order: stroke; stroke: #0b1a15; stroke-width: 3px; }
+    .m-ciudad.chica { font-size: 10px; }
+    .m-pueblo { fill: #d9dedb; font: 500 8px var(--letra); paint-order: stroke; stroke: #0b1a15; stroke-width: 2.5px; }
+    .ruta { stroke: var(--cian); stroke-width: 4.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .ruta-brillo { stroke: var(--cian); stroke-width: 12; fill: none; opacity: .15; stroke-linecap: round; }
+    .bus-tel .halo { fill: var(--neon); opacity: .3; }
+    .bus-tel .cuerpo { fill: var(--neon); stroke: #0b0f0d; stroke-width: 1.5; }
+
+    /* La sirena: el botón de pánico que flota en la app. */
+    .sirena-app { position: absolute; z-index: 4; right: 10px; top: 214px; width: 40px; height: 40px; }
+    .sirena-app .rayos { fill: none; stroke: #f97316; stroke-width: 2.5; stroke-linecap: round; }
+    .sirena-app .brillo { fill: none; stroke: #fff; stroke-width: 2.5; stroke-linecap: round; }
+
+    /* ═══ inicio ═══ */
+    .saludo { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .saludo img { width: 34px; height: 34px; border-radius: 50%; background: #0b0f0d; }
+    .saludo small { text-transform: uppercase; letter-spacing: .14em; font-size: .56rem; }
+    .saludo b { display: block; font-size: 1.3rem; font-weight: 500; line-height: 1.1; }
+    .campanita { margin-left: auto; width: 19px; height: 19px; }
+    .pregunta { margin: 14px 0 8px; font-size: .92rem; font-weight: 500; }
+    .buscador { display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 12px; border-radius: 14px; background: var(--app-tarjeta); border: 1px solid var(--app-borde); color: var(--app-tenue); font-size: .7rem; }
+    .buscador i { margin-left: auto; width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: var(--lima); color: #1a1a1a; }
+    .seccion-app { display: flex; align-items: center; gap: 6px; margin: 14px 0 7px; font-size: .74rem; font-weight: 600; }
+    .seccion-app span { margin-left: auto; display: flex; align-items: center; color: var(--app-tenue); font-weight: 500; font-size: .64rem; }
+    .seccion-app .ic { width: 14px; height: 14px; }
+    .mini-mapa { height: 86px; border-radius: 14px; overflow: hidden; border: 1px solid var(--app-borde); }
+    .mini-mapa svg { width: 100%; height: 100%; display: block; }
+    .comunidad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .comunidad div { padding: 10px 4px 9px; border-radius: 14px; background: var(--app-tarjeta); border: 1px solid var(--app-borde); text-align: center; }
+    .comunidad i { width: 28px; height: 28px; margin: 0 auto 6px; border-radius: 50%; display: grid; place-items: center; color: var(--c); background: var(--f); }
+    .comunidad b { display: block; font-size: 1.05rem; font-weight: 500; }
+    .comunidad small { font-size: .52rem; }
+    .accesos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .accesos div { padding: 9px 4px 30px; border-radius: 14px; background: var(--app-tarjeta); border: 1px solid var(--app-borde); text-align: center; font-size: .62rem; font-weight: 500; }
+    .accesos .agregar { background: transparent; border-color: #3a3f3d; color: var(--app-suave); }
+    .accesos i { width: 30px; height: 30px; margin: 0 auto 5px; border-radius: 10px; display: grid; place-items: center; color: var(--c); background: var(--f); font-style: normal; font-size: 1.1rem; }
+    .puntos { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 10px 12px; border-radius: 14px; background: linear-gradient(120deg, rgba(217, 255, 111, .14), rgba(58, 176, 79, .1)); border: 1px solid rgba(217, 255, 111, .18); font-size: .74rem; font-weight: 600; }
+    .puntos i { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; color: #1a1a1a; background: var(--lima); }
+
+    /* ═══ opciones ═══ */
+    .mapa { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .desde-hacia { position: absolute; z-index: 3; top: 44px; left: 10px; right: 10px; border-radius: 16px; background: var(--app-hoja); box-shadow: 0 10px 24px -10px rgba(0, 0, 0, .7); }
+    .desde-hacia div { display: flex; align-items: center; gap: 10px; padding: 8px 12px; font-size: .74rem; }
+    .desde-hacia div + div { border-top: 1px solid var(--app-borde); }
+    .desde-hacia small { font-size: .56rem; }
+    .desde-hacia b { margin-left: auto; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: #2c2c2c; color: var(--app-suave); }
+    .desde-hacia b .ic { width: 11px; height: 11px; }
+    .punto { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+    .punto.verde { background: var(--verde); }
+    .punto.rojo { background: #ef4444; }
+    .hoja { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; top: 332px; padding: 8px 14px 0; border-radius: 22px 22px 0 0; background: var(--app-hoja); }
+    .asa { display: block; width: 34px; height: 4px; margin: 0 auto 10px; border-radius: 99px; background: #4a4a4a; }
+    .opcion { margin-top: 8px; padding: 9px 11px; border-radius: 14px; background: var(--app-tarjeta); }
+    .opcion.elegida { margin-top: 10px; background: #203528; }
+    .opcion-fila { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .opcion-fila b { font-size: 1rem; font-weight: 500; }
+    .opcion-fila small { font-size: .58rem; color: var(--app-suave); }
+    .precio { display: flex; align-items: baseline; gap: 3px; color: var(--verde); font-size: .9rem; font-weight: 500; }
+    .precio small { font-size: .56rem; }
+    .barra-tramos { display: flex; gap: 2px; height: 5px; margin-top: 7px; }
+    .barra-tramos i { border-radius: 9px; background: #8a6420; }
+    .barra-tramos .bus { background: var(--verde); }
+
+    /* ═══ itinerario ═══ */
+    .franja-mapa { height: 104px; }
+    .franja-mapa svg { width: 100%; height: 100%; display: block; }
+    .hoja-alta { top: 90px; }
+    .itin-cabeza { display: flex; justify-content: space-between; gap: 8px; }
+    .itin-cabeza .hoja-titulo { font-size: .98rem; }
+    .itin-cabeza .precio { flex-direction: column; align-items: flex-end; gap: 0; font-size: 1.05rem; }
+    .itin-cabeza .precio small { display: inline; }
+    .itin-cabeza em { font-style: normal; color: var(--app-suave); font-size: .58rem; }
+    .pastillas { display: flex; gap: 5px; margin: 10px 0 12px; }
+    .pastillas span { display: flex; align-items: center; gap: 4px; padding: 5px 7px; border-radius: 9px; border: 1px solid #3a3a3a; background: #262626; font-size: .56rem; color: var(--app-suave); white-space: nowrap; }
+    .pastillas .ic { width: 11px; height: 11px; color: var(--averia); }
+    .pastillas span:first-child .ic { color: var(--desvio); }
+    .itinerario { list-style: none; margin: 8px 0 0; padding: 0; }
+    .itinerario li { position: relative; display: flex; gap: 10px; padding-bottom: 9px; }
+    .itinerario li::before { content: ""; position: absolute; left: 13px; top: 28px; bottom: 0; width: 2px; background: color-mix(in srgb, var(--c) 45%, transparent); }
+    .itinerario i { width: 28px; height: 28px; flex: none; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--c); color: var(--c); }
+    .itinerario i .ic { width: 13px; height: 13px; }
+    .t-pie { --c: var(--averia); }
+    .t-bus { --c: var(--verde); }
+    .t-parada { --c: #ef4444; }
+    .etiqueta { display: inline-block; padding: 2px 5px; margin-right: 5px; border-radius: 4px; font-size: .5rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--c); background: color-mix(in srgb, var(--c) 16%, transparent); }
+    .dato { margin-right: 5px; font-size: .6rem; color: var(--app-suave); }
+    .dato.verde { color: var(--verde); }
+    .itinerario p { margin: 3px 0 0; font-size: .74rem; }
+    .aceptar { position: absolute; left: 14px; right: 14px; bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 11px; border-radius: 14px; background: var(--verde); color: #fff; font-size: .78rem; font-weight: 600; box-shadow: 0 -18px 20px 4px var(--app-hoja); }
+
+    /* ═══ avisos ═══ */
+    .v-avisos { background: var(--app-hoja); }
+    .avisos-cabeza { margin-top: 4px; }
+    .avisos-cabeza .hoja-titulo { font-size: .98rem; }
+    .pestanas { display: grid; grid-template-columns: 1fr 1fr; padding: 3px; margin: 10px 0; border-radius: 12px; background: var(--app-tarjeta); text-align: center; font-size: .68rem; }
+    .pestanas b { padding: 6px; border-radius: 9px; color: var(--app-tenue); font-weight: 600; }
+    .pestanas .activo { background: #333; color: #fff; }
+    .reportes { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+    .reportes li { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 14px; background: var(--app-tarjeta); font-size: .74rem; font-weight: 600; }
+    .reportes i { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; flex: none; color: var(--c); background: color-mix(in srgb, var(--c) 18%, transparent); }
+    .reportes i .ic { width: 16px; height: 16px; }
+    .gracias { margin-left: auto; display: flex; align-items: center; gap: 3px; color: var(--app-tenue); font-size: .62rem; }
+    .gracias .ic { width: 11px; height: 11px; color: var(--manejo); }
+    .botones-aviso { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 10px; }
+    .botones-aviso span { display: flex; align-items: center; justify-content: center; gap: 5px; padding: 10px 6px; border-radius: 13px; font-size: .66rem; font-weight: 600; }
+    .botones-aviso .ic { width: 13px; height: 13px; }
+    .reportar { background: #3a2c14; color: var(--averia); }
+
+    /* ═══ alerta ═══ */
+    .v-alerta { padding: 52px 16px 0; text-align: center; background: radial-gradient(circle at 50% 38%, #4a1515 0%, #2a1414 34%, var(--app-hoja) 70%); }
+    .rojo { color: #f87171; }
+    .pulsador { position: relative; width: 170px; height: 170px; margin: 22px auto 18px; display: grid; place-items: center; }
+    .pulsador i { position: absolute; inset: 35px; border-radius: 50%; border: 2px solid rgba(239, 68, 68, .55); }
+    .pulsador i:nth-child(2) { transform: scale(1.4); opacity: .5; }
+    .pulsador i:nth-child(3) { transform: scale(1.8); opacity: .25; }
+    .sirena-grande { position: relative; width: 84px; height: 84px; padding: 14px; border-radius: 50%; background: #1c1c1c; box-shadow: 0 0 0 2px rgba(239, 68, 68, .5), 0 0 50px -6px rgba(239, 68, 68, .7); }
+    .sirena-grande .rayos { fill: none; stroke: #f97316; stroke-width: 2.5; stroke-linecap: round; }
+    .sirena-grande .brillo { fill: none; stroke: #fff; stroke-width: 2.5; stroke-linecap: round; }
+    .compartiendo { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 14px; background: var(--app-tarjeta); border: 1px solid var(--app-borde); text-align: left; font-size: .74rem; font-weight: 600; }
+    .compartiendo i { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; flex: none; color: var(--desvio); background: rgba(59, 130, 246, .18); }
+    .en-vivo { margin-left: auto; flex: none; white-space: nowrap; display: flex; align-items: center; gap: 4px; color: #8ee6a0; font-size: .58rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+    .en-vivo::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--verde); }
+    .nota-911 { margin: 12px 0 0; color: var(--app-suave); font-size: .66rem; }
+    .cerrar-alerta { position: absolute; left: 16px; right: 16px; bottom: 18px; padding: 11px; border-radius: 14px; background: #2c2c2c; color: #fff; font-size: .76rem; font-weight: 600; }
+    .ver { background: #1d3325; color: #8ee6a0; }
+</style>

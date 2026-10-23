@@ -1,0 +1,50 @@
+---
+import Telefono from "./Telefono.astro";
+import BotonPlay from "./BotonPlay.astro";
+---
+<section class="final" id="descargar">
+    <div class="contenido">
+        <div class="panel" data-revela>
+            <div class="texto">
+                <p class="previa">¿Listo para dejar de adivinar?</p>
+                <h2>Descarga <span class="junto"><em>Trazia</em> <span class="icono-descarga" aria-hidden="true"><svg class="ic"><use href="#i-descargar" /></svg></span></span></h2>
+                <div class="acciones">
+                    <BotonPlay />
+                    <p>Gratis, para Android.<br>Tu próximo viaje empieza aquí.</p>
+                </div>
+            </div>
+            <!-- El teléfono se mueve más lento que el scroll (paralaje, solo en escritorio). -->
+            <div class="final-telefono" data-paralaje>
+                <div class="inclinado"><Telefono escala={0.82} pantallas={["avisos"]} /></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .final { padding: 110px 0 90px; }
+    .panel {
+        position: relative; overflow: hidden; min-height: 440px; display: grid; grid-template-columns: 1fr 1fr; align-items: center;
+        padding: 56px; border-radius: 32px; background: var(--tarjeta); border: 1px solid var(--borde);
+    }
+    .panel::before { content: ""; position: absolute; width: 520px; height: 520px; right: -80px; top: -60px; border-radius: 50%; background: radial-gradient(circle, rgba(0, 230, 118, .16), transparent 62%); }
+    .texto { position: relative; z-index: 1; }
+    .previa { margin: 0 0 40px; color: var(--suave); font-weight: 600; }
+    h2 { font-size: clamp(2.4rem, 5.4vw, 3.8rem); }
+    .junto { white-space: nowrap; }
+    .icono-descarga { display: inline-grid; place-items: center; width: 44px; height: 44px; margin-left: 6px; vertical-align: middle; border-radius: 50%; background: var(--oscuro); color: #fff; }
+    .icono-descarga .ic { width: 22px; height: 22px; }
+    .acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 48px; }
+    .acciones p { margin: 0; color: var(--suave); font-size: .92rem; }
+    .final-telefono { position: absolute; right: 8%; top: 36px; }
+    .inclinado { transform: rotate(14deg); transform-origin: 50% 0; }
+
+    @media (max-width: 960px) {
+        .panel { grid-template-columns: 1fr; padding: 40px 28px 0; }
+        .final-telefono { position: relative; right: auto; top: auto; height: 300px; margin-top: 48px; display: flex; justify-content: center; }
+        .inclinado { transform: rotate(8deg); }
+    }
+    @media (max-width: 620px) {
+        .final { padding: 80px 0 64px; }
+    }
+</style>

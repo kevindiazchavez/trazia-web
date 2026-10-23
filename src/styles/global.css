@@ -1,0 +1,129 @@
+/*
+ * ESTILOS COMPARTIDOS. Cada sección trae los suyos en su componente.
+ *
+ * EL MOVIMIENTO VIVE EN src/scripts/animations.ts. Acá solo están las
+ * transiciones de hover, que animan únicamente transform y opacity: donde el
+ * diseño pide "cambio de fondo" o "sombra", es una capa encima que aparece.
+ * El hover usa `scale` y `translate` sueltos y no `transform`, que es el que
+ * mueve GSAP al revelar: así no se pisan.
+ */
+@font-face {
+    font-family: "Plus Jakarta Sans";
+    src: url("/marca/plus-jakarta-sans.ttf") format("truetype");
+    font-weight: 200 800;
+    font-display: swap;
+}
+
+/*
+ * LA WEB ES CLARA, como las referencias: blanco, grises suaves y botones
+ * negros, con el verde de la app solo de acento. Los colores de marca y de
+ * los avisos son los de la app (ui/theme/Color.kt del frontend). El teléfono
+ * muestra la app tal cual, oscura: redefine sus colores en Telefono.astro.
+ */
+:root {
+    color-scheme: light;
+    --fondo: #eceef1;          /* Alrededor del marco. */
+    --marco: #ffffff;
+    --tarjeta: #f2f3f5;
+    --tarjeta-2: #f8f9fa;
+    --acento-claro: #ddf5e6;   /* El verde suave de las tarjetas destacadas. */
+    --borde: rgba(17, 24, 39, .08);
+    --borde-fuerte: rgba(17, 24, 39, .14);
+    --texto: #0b0f0d;
+    --suave: #4b5563;
+    --tenue: #6b7280;
+    --oscuro: #0b0f0d;         /* Botones píldora e íconos en círculo. */
+    --verde: #3ab04f;          /* AcentoApp */
+    --verde-oscuro: #0c8a43;   /* El verde para texto sobre blanco. */
+    --neon: #00e676;           /* VerdeBrillante */
+    --lima: #d9ff6f;           /* LimaApp */
+    --trafico: #f97316; --desvio: #3b82f6; --averia: #f59e0b; --robo: #ef4444; --manejo: #ec4899;
+    --brillo: rgba(0, 230, 118, .45);
+    --letra: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --curva: cubic-bezier(.2, .8, .2, 1);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 90px; }
+body { margin: 0; background: var(--fondo); color: var(--texto); font: 16px/1.6 var(--letra); overflow-x: hidden; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; }
+::selection { background: rgba(0, 230, 118, .3); }
+a { color: var(--verde-oscuro); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--verde-oscuro); outline-offset: 3px; border-radius: 12px; }
+img, svg { display: block; }
+.ic { width: 24px; height: 24px; fill: currentColor; flex: none; }
+.oculto { position: absolute; width: 0; height: 0; overflow: hidden; }
+/* Con viewport-fit=cover (iPhone con notch o isla, Android con recorte) el
+   contenido respeta las zonas seguras de los costados. */
+.contenido {
+    max-width: 1320px; margin: 0 auto; position: relative;
+    padding-left: max(clamp(16px, 3.5vw, 48px), env(safe-area-inset-left));
+    padding-right: max(clamp(16px, 3.5vw, 48px), env(safe-area-inset-right));
+}
+
+/* Lo que pide Lenis para el scroll suave. */
+html.lenis, html.lenis body { height: auto; }
+.lenis-smooth { scroll-behavior: auto !important; }
+.lenis-stopped { overflow: hidden; }
+
+/* ═══ El marco: la página es una tarjeta grande sobre el fondo ═══
+ * `overflow: clip` y no `hidden`: hidden lo volvería contenedor de scroll y
+ * rompería el teléfono sticky de "Cómo funciona". */
+.marco { position: relative; isolation: isolate; margin: 12px; border-radius: 36px; background: var(--marco); border: 1px solid var(--borde); overflow: hidden; overflow: clip; }
+.manchas { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.mancha { position: absolute; width: 760px; aspect-ratio: 1; border-radius: 50%; }
+.mancha-1 { top: -160px; left: -200px; background: radial-gradient(circle, rgba(217, 255, 111, .45), transparent 62%); }
+.mancha-2 { top: 380px; right: -240px; background: radial-gradient(circle, rgba(0, 230, 118, .16), transparent 62%); }
+.mancha-3 { top: 1900px; left: -240px; background: radial-gradient(circle, rgba(217, 255, 111, .35), transparent 62%); }
+.mancha-4 { top: 2600px; right: -260px; background: radial-gradient(circle, rgba(0, 230, 118, .14), transparent 62%); }
+
+/* ═══ Títulos ═══ */
+h1, h2, h3 { font-weight: 600; letter-spacing: -.035em; }
+h2 { margin: 0; font-size: clamp(2rem, 4.4vw, 3.1rem); line-height: 1.08; }
+h1 em, h2 em { font-style: normal; color: var(--verde-oscuro); }
+.palabra { display: inline-block; } /* Las que arma animations.ts para el título. */
+
+/* ═══ Botones píldora (negros, como la referencia) ═══ */
+.boton {
+    position: relative; isolation: isolate; overflow: hidden;
+    display: inline-flex; align-items: center; gap: 10px; padding: 10px 22px 10px 16px; border-radius: 999px;
+    background: var(--oscuro); color: #fff; text-decoration: none; font-weight: 700; line-height: 1.15;
+    box-shadow: 0 0 0 3px rgba(11, 15, 13, .08), 0 12px 24px -12px rgba(11, 15, 13, .55);
+    transition: scale .2s ease;
+}
+.boton::before { /* El cambio de fondo del hover: una capa verde que aparece. */
+    content: ""; position: absolute; inset: 0; z-index: -1; background: var(--verde-oscuro); opacity: 0; transition: opacity .2s ease;
+}
+.boton svg { width: 24px; height: 24px; flex: none; }
+.boton small { display: block; font-size: .68rem; font-weight: 600; opacity: .75; letter-spacing: .02em; }
+.boton-chico { padding: 9px 18px; font-size: .9rem; }
+.boton-pronto { cursor: default; }
+@media (hover: hover) {
+    .boton:hover { scale: 1.03; }
+    .boton:hover::before { opacity: 1; }
+}
+
+/* ═══ Tarjetas que se levantan ═══
+ * La sombra grande es una capa que aparece; `isolation` la deja detrás del
+ * contenido pero encima de los fondos de sección. */
+.elevable { position: relative; isolation: isolate; transition: translate .3s var(--curva); }
+.elevable::after {
+    content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+    box-shadow: 0 28px 50px -26px rgba(17, 24, 39, .35), 0 0 0 1px rgba(17, 24, 39, .06);
+    opacity: 0; transition: opacity .3s ease;
+}
+@media (hover: hover) {
+    .elevable:hover { translate: 0 -4px; }
+    .elevable:hover::after { opacity: 1; }
+}
+
+/* Mientras carga animations.ts, la portada espera escondida para no verse
+   un instante y desaparecer. Si el script no llega, a los 3 s se muestra igual. */
+.js:not(.anim-listo) [data-hero] { visibility: hidden; }
+
+@media (max-width: 760px) {
+    .marco { margin: 6px; border-radius: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .boton, .elevable { transition: none; }
+    .boton:hover { scale: none; }
+    .elevable:hover { translate: none; }
+}

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Trazia te dice qué bus tomar en El Salvador: la ruta, dónde subir, dónde bajar y cuánto caminar, con avisos en vivo de la comunidad.">
+    <meta name="theme-color" content="#080f0a">
+    <link rel="icon" type="image/png" href="marca/trazia-logo.png">
+    <title>Trazia · Qué bus tomar en El Salvador</title>
+    <style>
+        /*
+         * TODO EL MOVIMIENTO ES CSS Y SVG, SIN UNA LÍNEA DE JAVASCRIPT.
+         * Nació servida por el backend, con una política que no dejaba correr
+         * scripts, y no hace falta: los buses
+         * del fondo andan con <animateMotion>, los reportes del teléfono rotan
+         * con animaciones CSS, y lo que aparece al bajar usa las animaciones
+         * ligadas al scroll del navegador. Donde el navegador no las tiene, todo
+         * se ve igual, solo que quieto.
+         *
+         * LOS ÍCONOS SON LOS DE GOOGLE (Material Icons, rellenos), dibujados acá
+         * en <symbol>: la página no carga nada de otro sitio, ni la fuente de
+         * íconos de Google.
+         */
+        @font-face {
+            font-family: "Plus Jakarta Sans";
+            src: url("marca/plus-jakarta-sans.ttf") format("truetype");
+            font-weight: 200 800;
+            font-display: swap;
+        }
+        @property --giro { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+
+        /*
+         * LA PALETA DE LA APP, tal cual (ui/theme/Color.kt del frontend). Si
+         * cambia allá, se cambia acá: la web y la app tienen que verse iguales.
+         */
+        :root {
+            color-scheme: dark;
+            --fondo: #080f0a;          /* FondoOscuro */
+            --fondo-2: #0c1913;
+            --tarjeta: #10231f;        /* FondoApp */
+            --superficie: #201f1f;     /* SuperficieApp */
+            --borde: rgba(255, 255, 255, .08);  /* BordeApp */
+            --texto: #ffffff;          /* TextoApp */
+            --suave: #c9d3ce;
+            --tenue: #9ca3af;          /* TextoAppTenue */
+            --verde: #3ab04f;          /* AcentoApp */
+            --neon: #00e676;           /* VerdeBrillante */
+            --lima: #d9ff6f;           /* LimaApp */
+            --trafico: #f97316; --desvio: #3b82f6; --averia: #f59e0b; --robo: #ef4444; --manejo: #ec4899; --emergencia: #22c55e;
+            --brillo: rgba(0, 230, 118, .55);
+            --letra: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            --sombra: 0 30px 60px -30px rgba(0, 0, 0, .9), 0 12px 24px -16px rgba(0, 0, 0, .7);
+        }
+        * { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 84px; }
+        body { margin: 0; background: var(--fondo); color: var(--texto); font: 16px/1.65 var(--letra); overflow-x: hidden; }
+        ::selection { background: rgba(0, 230, 118, .35); }
+        a { color: var(--neon); text-underline-offset: 3px; }
+        a:focus-visible, .boton:focus-visible { outline: 2px solid var(--lima); outline-offset: 3px; border-radius: 12px; }
+        .contenido { max-width: 1160px; margin: 0 auto; padding: 0 20px; position: relative; }
+        .ic { width: 24px; height: 24px; fill: currentColor; flex: none; }
+        .oculto { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+        /* ═══ Barra ═══ */
+        .barra { position: fixed; inset: 0 0 auto; z-index: 20; background: linear-gradient(180deg, rgba(8, 15, 10, .88), rgba(8, 15, 10, .55)); backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%); border-bottom: 1px solid var(--borde); }
+        .barra .contenido { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 70px; }
+        .marca { display: inline-flex; align-items: center; gap: 12px; color: var(--texto); text-decoration: none; font-weight: 800; font-size: 1.3rem; letter-spacing: -.02em; }
+        .marca img { width: 40px; height: 40px; border-radius: 12px; box-shadow: 0 0 0 1px var(--borde), 0 0 26px -4px var(--brillo); transition: transform .4s cubic-bezier(.2, .8, .2, 1.4); }
+        .marca:hover img { transform: rotate(-8deg) scale(1.08); }
+        .menu { display: flex; align-items: center; gap: 30px; font-size: .95rem; font-weight: 600; }
+        .menu a { position: relative; color: var(--suave); text-decoration: none; padding: 6px 0; transition: color .2s; }
+        .menu a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--neon), var(--lima)); transform: scaleX(0); transform-origin: left; transition: transform .3s ease; }
+        .menu a:hover { color: var(--texto); }
+        .menu a:hover::after { transform: scaleX(1); }
+
+        /* ═══ Botón de Google Play ═══ */
+        .boton {
+            position: relative; overflow: hidden; isolation: isolate;
+            display: inline-flex; align-items: center; gap: 12px; padding: 13px 24px 13px 18px; border-radius: 16px;
+            background: linear-gradient(135deg, var(--neon), var(--verde)); color: var(--fondo); text-decoration: none; font-weight: 800; line-height: 1.15;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, .15) inset, 0 14px 34px -12px var(--brillo);
+            transition: transform .25s cubic-bezier(.2, .8, .2, 1.2), box-shadow .25s ease;
+        }
+        .boton::after { /* El brillo que cruza el botón. */
+            content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; width: 45%; left: -60%;
+            background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .55), transparent); transform: skewX(-20deg);
+            animation: destello 4.5s ease-in-out infinite;
+        }
+        .boton:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 0 0 1px rgba(255, 255, 255, .2) inset, 0 22px 44px -12px rgba(0, 230, 118, .9); }
+        .boton svg { width: 26px; height: 26px; flex: none; }
+        .boton small { display: block; font-size: .72rem; font-weight: 600; opacity: .75; letter-spacing: .02em; }
+        .boton span { font-size: 1.05rem; }
+        .boton-pronto { background: rgba(0, 230, 118, .07); color: var(--texto); box-shadow: 0 0 0 1px rgba(0, 230, 118, .45) inset, 0 0 40px -14px var(--brillo); }
+        .boton-pronto::after { background: linear-gradient(100deg, transparent, rgba(0, 230, 118, .3), transparent); }
+        .boton-pronto:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(0, 230, 118, .7) inset, 0 0 50px -10px rgba(0, 230, 118, .75); }
+        .boton-pronto svg path { fill: var(--neon); }
+        @keyframes destello { 0%, 55% { left: -60%; } 85%, 100% { left: 130%; } }
+
+        /* ═══ Portada: el mapa con los buses andando ═══ */
+        .portada { position: relative; min-height: 100vh; min-height: 100svh; padding: 140px 0 110px; display: flex; align-items: center; overflow: hidden; isolation: isolate; }
+        .ciudad { position: absolute; inset: 0; z-index: -3; width: 100%; height: 100%; animation: deriva 40s ease-in-out infinite alternate; }
+        .ciudad .manzanas { fill: url(#cuadra); }
+        .ciudad .avenida { stroke: rgba(255, 255, 255, .06); stroke-width: 12; fill: none; stroke-linecap: round; }
+        .ciudad .calle-chica { stroke: rgba(255, 255, 255, .035); stroke-width: 5; fill: none; stroke-linecap: round; }
+        .ciudad .linea { fill: none; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; opacity: .62; stroke-dasharray: 2600; stroke-dashoffset: 2600; animation: trazar 3.2s cubic-bezier(.6, 0, .2, 1) forwards; }
+        .ciudad .linea-brillo { fill: none; stroke-width: 16; stroke-linecap: round; opacity: .08; }
+        .ciudad .l1 { stroke: var(--neon); animation-delay: .2s; }
+        .ciudad .l2 { stroke: var(--lima); animation-delay: .5s; }
+        .ciudad .l3 { stroke: var(--desvio); animation-delay: .8s; }
+        .ciudad .l4 { stroke: var(--averia); animation-delay: 1.1s; }
+        .ciudad .l5 { stroke: var(--verde); animation-delay: 1.4s; }
+        .ciudad .parada { fill: var(--fondo); stroke-width: 3.5; }
+        .ciudad .p1 { stroke: var(--neon); } .ciudad .p2 { stroke: var(--lima); } .ciudad .p3 { stroke: var(--desvio); } .ciudad .p4 { stroke: var(--averia); } .ciudad .p5 { stroke: var(--verde); }
+        /* El marcador del bus, como en los mapas: círculo del color de su ruta con el ícono adentro. */
+        /* Van sobre el original de #marcador y no sobre `.bus`: lo que dibuja <use> toma el estilo del original, y el color lo hereda del grupo del bus. */
+        .ciudad .cuerpo { stroke: var(--fondo); stroke-width: 3; }
+        .ciudad .aura { opacity: .3; transform-box: fill-box; transform-origin: center; animation: aura 2.2s ease-out infinite; }
+        .ciudad .b1 { fill: var(--neon); } .ciudad .b2 { fill: var(--lima); } .ciudad .b3 { fill: var(--desvio); } .ciudad .b4 { fill: var(--averia); } .ciudad .b5 { fill: var(--verde); }
+        @keyframes aura { 0% { transform: scale(.7); opacity: .45; } 100% { transform: scale(1.7); opacity: 0; } }
+        /* El velo que deja leer el texto encima del mapa. */
+        .portada::before {
+            content: ""; position: absolute; inset: 0; z-index: -2;
+            background:
+                linear-gradient(90deg, rgba(8, 15, 10, .94) 0%, rgba(8, 15, 10, .86) 36%, rgba(8, 15, 10, .45) 52%, rgba(8, 15, 10, .04) 68%, rgba(8, 15, 10, .35) 100%),
+                linear-gradient(180deg, rgba(8, 15, 10, .7) 0%, transparent 22%, transparent 70%, var(--fondo) 100%);
+        }
+        .portada::after { content: ""; position: absolute; z-index: -1; width: 720px; height: 720px; right: -120px; top: 50%; margin-top: -360px; border-radius: 50%; background: radial-gradient(circle, rgba(0, 230, 118, .18), transparent 65%); animation: respirar 7s ease-in-out infinite; }
+        @keyframes trazar { to { stroke-dashoffset: 0; } }
+        @keyframes fluir { to { stroke-dashoffset: -28; } }
+        @keyframes deriva { from { transform: scale(1.06) translate(0, 0); } to { transform: scale(1.12) translate(-2.5%, -1.5%); } }
+        @keyframes respirar { 0%, 100% { opacity: .75; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+
+        .portada .contenido { width: 100%; display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
+        .chip { display: inline-flex; align-items: center; gap: 10px; padding: 7px 16px 7px 12px; border-radius: 99px; border: 1px solid rgba(0, 230, 118, .28); background: rgba(0, 230, 118, .07); color: var(--suave); font-size: .85rem; font-weight: 600; margin: 0 0 26px; box-shadow: 0 0 30px -10px var(--brillo); }
+        .chip .ic { width: 18px; height: 18px; color: var(--lima); filter: drop-shadow(0 0 6px rgba(217, 255, 111, .7)); }
+        h1 { margin: 0 0 24px; font-size: clamp(2.6rem, 7.2vw, 4.7rem); line-height: 1.0; letter-spacing: -.048em; font-weight: 800; text-shadow: 0 10px 40px rgba(0, 0, 0, .6); }
+        h1 em {
+            font-style: normal; background: linear-gradient(100deg, var(--neon) 0%, var(--lima) 35%, #ffffff 50%, var(--lima) 65%, var(--neon) 100%);
+            background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+            animation: reflejo 6s ease-in-out infinite;
+        }
+        @keyframes reflejo { 0%, 100% { background-position: 100% 0; } 50% { background-position: 0% 0; } }
+        .bajada { margin: 0 0 36px; font-size: clamp(1.05rem, 2.2vw, 1.24rem); color: var(--suave); max-width: 32em; }
+        .acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; }
+        .nota { color: var(--tenue); font-size: .92rem; display: inline-flex; align-items: center; gap: 8px; }
+        .nota .ic { width: 20px; height: 20px; color: var(--neon); }
+
+        /* Entrada de la portada, escalonada. Sin desenfoque a propósito: animar
+           `filter` sobre el título grande lo dejaba invisible en algunos navegadores. */
+        .entra { animation: subir .9s cubic-bezier(.2, .8, .2, 1) both; }
+        .e1 { animation-delay: .15s; } .e2 { animation-delay: .3s; } .e3 { animation-delay: .45s; } .e5 { animation-delay: .5s; }
+        @keyframes subir { from { opacity: 0; transform: translateY(34px); } to { opacity: 1; transform: none; } }
+
+        /* ═══ Teléfono ═══ */
+        .escena { position: relative; display: grid; place-items: center; min-height: 600px; perspective: 1400px; }
+        .flota { animation: flotar 7s ease-in-out infinite; transform-style: preserve-3d; }
+        .telefono {
+            width: 296px; height: 604px; border-radius: 48px; padding: 12px; position: relative;
+            background: linear-gradient(150deg, #34443c, #0b120e 45%, #1f2b25);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, .12), 0 0 0 7px rgba(0, 0, 0, .35), 0 60px 90px -30px rgba(0, 0, 0, .95), 0 0 140px -20px var(--brillo);
+            transform: rotateY(-16deg) rotateX(8deg) rotateZ(-3deg); transition: transform .8s cubic-bezier(.2, .8, .2, 1);
+        }
+        .escena:hover .telefono { transform: rotateY(-4deg) rotateX(2deg) rotateZ(-1deg); }
+        .telefono::after { /* El reflejo del vidrio. */
+            content: ""; position: absolute; inset: 12px; border-radius: 38px; pointer-events: none;
+            background: linear-gradient(115deg, rgba(255, 255, 255, .14) 0%, transparent 28%, transparent 70%, rgba(255, 255, 255, .05) 100%);
+        }
+        .pantalla { width: 100%; height: 100%; border-radius: 38px; overflow: hidden; background: var(--tarjeta); position: relative; display: flex; flex-direction: column; }
+        .pantalla::before { content: ""; position: absolute; top: 10px; left: 50%; width: 88px; height: 25px; margin-left: -44px; border-radius: 99px; background: #050a07; z-index: 2; }
+        .mapita { flex: 1; display: block; width: 100%; }
+        .mapita .manzana { fill: #13302a; }
+        .mapita .calle { stroke: #1d3d36; stroke-width: 9; fill: none; stroke-linecap: round; }
+        .mapita .a-pie { stroke: var(--averia); stroke-width: 3.5; stroke-dasharray: 1 7; stroke-linecap: round; fill: none; animation: fluir 1.4s linear infinite; }
+        .mapita .ruta { stroke: var(--neon); stroke-width: 6; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 520; stroke-dashoffset: 520; animation: trazar 2.2s 1s cubic-bezier(.6, 0, .2, 1) forwards; }
+        .mapita .ruta-brillo { stroke: var(--neon); stroke-width: 18; fill: none; opacity: .14; stroke-linecap: round; stroke-linejoin: round; }
+        .mapita .parada { fill: var(--tarjeta); stroke: var(--neon); stroke-width: 3; }
+        .mapita .yo { fill: var(--desvio); stroke: #fff; stroke-width: 3; }
+        .mapita .yo-aura { fill: var(--desvio); transform-box: fill-box; transform-origin: center; animation: aura 2.4s ease-out infinite; }
+        .mapita .pin { fill: var(--lima); }
+        .mapita .bus-tel .cuerpo { fill: var(--neon); stroke: var(--tarjeta); stroke-width: 2.5; }
+        .mapita .bus-tel .aura { fill: var(--neon); transform-box: fill-box; transform-origin: center; animation: aura 2s ease-out infinite; }
+        .hoja { background: #f8faf9; color: #111827; border-radius: 26px 26px 0 0; padding: 14px 16px 18px; box-shadow: 0 -16px 30px -10px rgba(0, 0, 0, .5); animation: hoja-sube 1s 1.4s cubic-bezier(.2, .8, .2, 1) both; }
+        @keyframes hoja-sube { from { transform: translateY(100%); } to { transform: none; } }
+        .hoja::before { content: ""; display: block; width: 36px; height: 4px; border-radius: 99px; background: #e5e7eb; margin: 0 auto 12px; }
+        .hoja-titulo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .hoja-titulo b { font-size: 1.05rem; letter-spacing: -.01em; }
+        .hoja-titulo span { font-size: .78rem; color: #fff; font-weight: 700; background: var(--verde); padding: 2px 9px; border-radius: 99px; }
+        .tramos { list-style: none; margin: 0; padding: 0; }
+        .tramos li { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: .8rem; font-weight: 600; }
+        .tramos li + li { border-top: 1px solid #eef0f2; }
+        .tramos i { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; flex: none; color: #fff; }
+        .tramos i .ic { width: 17px; height: 17px; }
+        .tramos .t-pie { background: var(--averia); }
+        .tramos .t-bus { background: var(--verde); }
+        .tramos .t-fin { background: var(--desvio); }
+        .tramos small { display: block; font-weight: 500; color: #6b7280; font-size: .72rem; }
+        .tramos .min { margin-left: auto; color: #374151; white-space: nowrap; }
+
+        /* Los avisos que aparecen junto al teléfono. */
+        .flotante {
+            position: absolute; z-index: 2; display: flex; align-items: center; gap: 11px; padding: 11px 16px 11px 11px; border-radius: 18px;
+            background: rgba(16, 35, 31, .82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, .12); box-shadow: var(--sombra); font-size: .85rem; font-weight: 700; white-space: nowrap;
+        }
+        .flotante small { display: block; color: var(--tenue); font-weight: 500; font-size: .74rem; }
+        .flotante i { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; flex: none; color: #fff; }
+        .flotante i .ic { width: 21px; height: 21px; }
+        .cat-trafico i { background: var(--trafico); box-shadow: 0 0 22px -4px var(--trafico); }
+        .cat-desvio i { background: var(--desvio); box-shadow: 0 0 22px -4px var(--desvio); }
+        .cat-averia i { background: var(--averia); box-shadow: 0 0 22px -4px var(--averia); }
+        .cat-manejo i { background: var(--manejo); box-shadow: 0 0 22px -4px var(--manejo); }
+        .cat-puntos i { background: var(--lima); color: var(--superficie); box-shadow: 0 0 22px -4px var(--lima); }
+        .cat-canal i { background: var(--verde); box-shadow: 0 0 22px -4px var(--verde); }
+        .cat-gracias i { background: var(--neon); color: var(--fondo); box-shadow: 0 0 22px -4px var(--neon); }
+        /*
+         * LOS REPORTES ROTAN: cuatro avisos en el mismo lugar, y cada uno se ve
+         * un cuarto del ciclo. Lo mismo con los de la comunidad, de a tres.
+         */
+        /* Los cuenta como hermanos del teléfono (.flota es el primer div): los de arriba son el 2 al 5, los de abajo el 6 al 8. */
+        .rota-a { top: 74px; left: -14px; opacity: 0; animation: rotar-4 16s cubic-bezier(.2, .8, .2, 1) infinite; }
+        .rota-a:nth-of-type(3) { animation-delay: 4s; } .rota-a:nth-of-type(4) { animation-delay: 8s; } .rota-a:nth-of-type(5) { animation-delay: 12s; }
+        .rota-b { top: 300px; right: -30px; opacity: 0; animation: rotar-3 12s cubic-bezier(.2, .8, .2, 1) infinite; animation-delay: 2s; }
+        .rota-b:nth-of-type(7) { animation-delay: 6s; } .rota-b:nth-of-type(8) { animation-delay: 10s; }
+        @keyframes rotar-4 { 0% { opacity: 0; transform: translateY(14px) scale(.94); } 3%, 22% { opacity: 1; transform: none; } 25%, 100% { opacity: 0; transform: translateY(-12px) scale(.97); } }
+        @keyframes rotar-3 { 0% { opacity: 0; transform: translateX(16px) scale(.94); } 4%, 30% { opacity: 1; transform: none; } 33.3%, 100% { opacity: 0; transform: translateX(-10px) scale(.97); } }
+        @keyframes flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+
+        /* ═══ Franja que corre ═══ */
+        .franja { position: relative; border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); background: var(--tarjeta); overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+        .cinta { display: flex; width: max-content; animation: correr 38s linear infinite; }
+        .franja:hover .cinta { animation-play-state: paused; }
+        .cinta ul { list-style: none; margin: 0; padding: 20px 0; display: flex; gap: 48px; padding-right: 48px; }
+        .cinta li { display: flex; align-items: center; gap: 12px; color: var(--suave); font-weight: 700; font-size: 1rem; white-space: nowrap; }
+        .cinta i { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: var(--fondo); background: var(--neon); }
+        .cinta li:nth-child(3n+2) i { background: var(--lima); color: var(--superficie); }
+        .cinta li:nth-child(3n) i { background: var(--trafico); color: #fff; }
+        .cinta .ic { width: 20px; height: 20px; }
+        @keyframes correr { to { transform: translateX(-50%); } }
+
+        /* ═══ Secciones ═══ */
+        .seccion { position: relative; padding: 120px 0; overflow: hidden; }
+        .seccion-brillo::before { content: ""; position: absolute; width: 900px; height: 600px; left: 50%; top: 0; margin-left: -450px; background: radial-gradient(ellipse at center, rgba(0, 230, 118, .08), transparent 65%); pointer-events: none; }
+        .encabezado { max-width: 660px; margin-bottom: 56px; }
+        .antetitulo { display: inline-flex; align-items: center; gap: 10px; margin: 0 0 14px; color: var(--neon); font-size: .8rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+        .antetitulo::before { content: ""; width: 28px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--neon), transparent); }
+        h2 { margin: 0 0 16px; font-size: clamp(2.1rem, 5vw, 3.2rem); line-height: 1.06; letter-spacing: -.04em; font-weight: 800; }
+        h2 em { font-style: normal; color: var(--neon); }
+        .encabezado p { margin: 0; color: var(--suave); font-size: 1.12rem; }
+
+        .rejilla { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .caja {
+            position: relative; isolation: isolate; padding: 30px; border-radius: 24px; border: 1px solid var(--borde);
+            background: linear-gradient(180deg, rgba(255, 255, 255, .045), rgba(255, 255, 255, .012)), var(--tarjeta);
+            box-shadow: var(--sombra); transition: transform .45s cubic-bezier(.2, .8, .2, 1), box-shadow .45s ease;
+        }
+        /* El borde de luz que gira al pasar por encima. */
+        .caja::before {
+            content: ""; position: absolute; inset: -1px; z-index: -1; border-radius: inherit; padding: 1px;
+            background: conic-gradient(from var(--giro), transparent 0deg, var(--neon) 60deg, var(--lima) 90deg, transparent 150deg, transparent 360deg);
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+            opacity: 0; transition: opacity .4s ease; animation: girar 4s linear infinite;
+        }
+        .caja::after { /* El resplandor de adentro. */
+            content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+            background: radial-gradient(420px 200px at 50% 0%, rgba(0, 230, 118, .13), transparent 70%); opacity: 0; transition: opacity .45s ease;
+        }
+        .caja:hover { transform: translateY(-8px); box-shadow: 0 40px 70px -30px rgba(0, 0, 0, .95), 0 0 50px -20px var(--brillo); }
+        .caja:hover::before, .caja:hover::after { opacity: 1; }
+        @keyframes girar { to { --giro: 360deg; } }
+        .caja-grande { grid-column: span 2; background: radial-gradient(560px 260px at 85% 0%, rgba(0, 230, 118, .15), transparent 70%), linear-gradient(180deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .012)), var(--tarjeta); }
+        /* Mosaicos rellenos con el color de la app y el ícono encima, como en la app. */
+        .icono { width: 56px; height: 56px; border-radius: 17px; display: grid; place-items: center; margin-bottom: 22px; color: var(--fondo); background: linear-gradient(140deg, var(--neon), var(--verde)); box-shadow: 0 0 0 1px rgba(255, 255, 255, .15) inset, 0 12px 30px -10px var(--brillo); transition: transform .45s cubic-bezier(.2, .8, .2, 1.4); }
+        .caja:hover .icono { transform: scale(1.1) rotate(-6deg); }
+        .icono .ic { width: 30px; height: 30px; }
+        .caja h3 { margin: 0 0 8px; font-size: 1.22rem; letter-spacing: -.02em; }
+        .caja p { margin: 0; color: var(--suave); }
+        .caja-grande h3 { font-size: 1.6rem; }
+        .caja-grande p { max-width: 30em; font-size: 1.06rem; }
+        .icono-trafico { color: #fff; background: linear-gradient(140deg, #fb923c, var(--trafico)); box-shadow: 0 0 0 1px rgba(255, 255, 255, .15) inset, 0 12px 30px -10px rgba(249, 115, 22, .7); }
+        .icono-lima { color: var(--superficie); background: linear-gradient(140deg, #eaffb0, var(--lima)); box-shadow: 0 0 0 1px rgba(255, 255, 255, .2) inset, 0 12px 30px -10px rgba(217, 255, 111, .6); }
+        .icono-azul { color: #fff; background: linear-gradient(140deg, #60a5fa, var(--desvio)); box-shadow: 0 0 0 1px rgba(255, 255, 255, .15) inset, 0 12px 30px -10px rgba(59, 130, 246, .7); }
+        .icono-rojo { color: #fff; background: linear-gradient(140deg, #f87171, var(--robo)); box-shadow: 0 0 0 1px rgba(255, 255, 255, .15) inset, 0 12px 30px -10px rgba(239, 68, 68, .7); }
+        .caja-ancha { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr auto; gap: 4px 24px; align-items: center; border-color: rgba(239, 68, 68, .25); background: radial-gradient(460px 220px at 0% 50%, rgba(239, 68, 68, .14), transparent 70%), linear-gradient(180deg, rgba(255, 255, 255, .045), rgba(255, 255, 255, .012)), var(--tarjeta); }
+        .caja-ancha .icono { margin: 0; grid-row: span 2; width: 66px; height: 66px; }
+        .caja-ancha .icono .ic { width: 36px; height: 36px; }
+        .caja-ancha h3 { align-self: end; }
+        .caja-ancha p { align-self: start; grid-column: 2; }
+        .caja-ancha::before { background: conic-gradient(from var(--giro), transparent 0deg, var(--robo) 60deg, var(--trafico) 90deg, transparent 150deg, transparent 360deg); }
+        .caja-ancha:hover { box-shadow: 0 40px 70px -30px rgba(0, 0, 0, .95), 0 0 50px -20px rgba(239, 68, 68, .5); }
+        .sirena { grid-row: 1 / span 2; grid-column: 3; position: relative; width: 70px; height: 70px; display: grid; place-items: center; }
+        .sirena i { position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--robo); animation: onda 2.4s ease-out infinite; }
+        .sirena i + i { animation-delay: 1.2s; }
+        .sirena b { width: 18px; height: 18px; border-radius: 50%; background: var(--robo); box-shadow: 0 0 20px var(--robo); }
+        @keyframes onda { from { transform: scale(.5); opacity: 1; } to { transform: scale(2.2); opacity: 0; } }
+
+        /* ═══ Pasos ═══ */
+        .pasos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; counter-reset: paso; position: relative; }
+        .pasos::before { /* La ruta que une los pasos. */
+            content: ""; position: absolute; left: 12%; right: 12%; top: 62px; height: 3px; z-index: 0;
+            background: repeating-linear-gradient(90deg, var(--neon) 0 10px, transparent 10px 22px); opacity: .5; animation: avanzar 1.2s linear infinite;
+        }
+        @keyframes avanzar { to { background-position: 22px 0; } }
+        .paso { counter-increment: paso; position: relative; z-index: 1; padding: 32px 30px; border-radius: 24px; background: linear-gradient(180deg, var(--tarjeta), var(--fondo-2)); border: 1px solid var(--borde); box-shadow: var(--sombra); transition: transform .45s cubic-bezier(.2, .8, .2, 1); }
+        .paso:hover { transform: translateY(-6px); }
+        .paso::before {
+            content: counter(paso); display: grid; place-items: center; width: 60px; height: 60px; margin-bottom: 22px; border-radius: 18px;
+            font-size: 1.6rem; font-weight: 800; color: var(--fondo); background: linear-gradient(135deg, var(--neon), var(--lima));
+            box-shadow: 0 0 0 6px rgba(0, 230, 118, .1), 0 0 40px -6px rgba(0, 230, 118, .8);
+        }
+        .paso h3 { margin: 0 0 8px; font-size: 1.22rem; letter-spacing: -.02em; }
+        .paso p { margin: 0; color: var(--suave); }
+
+        /* ═══ Tus datos ═══ */
+        .confianza { position: relative; overflow: hidden; isolation: isolate; display: grid; grid-template-columns: .9fr 1.1fr; gap: 44px; align-items: center; padding: 56px; border-radius: 32px; background: linear-gradient(140deg, #12302a, var(--tarjeta) 60%); border: 1px solid rgba(0, 230, 118, .18); box-shadow: var(--sombra), 0 0 80px -40px var(--brillo); }
+        .confianza::before { content: ""; position: absolute; z-index: -1; width: 420px; height: 420px; left: -140px; bottom: -200px; border-radius: 50%; background: radial-gradient(circle, rgba(0, 230, 118, .2), transparent 65%); animation: respirar 8s ease-in-out infinite; }
+        .confianza h2 { font-size: clamp(1.9rem, 4vw, 2.6rem); }
+        .confianza > div > p { margin: 0; color: var(--suave); font-size: 1.06rem; }
+        .garantias { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+        .garantias li { display: flex; gap: 16px; align-items: center; padding: 16px 18px; border-radius: 18px; background: rgba(0, 0, 0, .28); border: 1px solid var(--borde); color: var(--suave); transition: transform .35s cubic-bezier(.2, .8, .2, 1), border-color .35s; }
+        .garantias li:hover { transform: translateX(6px); border-color: rgba(0, 230, 118, .35); }
+        .garantias i { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; flex: none; color: var(--fondo); background: linear-gradient(140deg, var(--neon), var(--verde)); box-shadow: 0 8px 20px -8px var(--brillo); }
+        .garantias .ic { width: 24px; height: 24px; }
+        .garantias strong { color: var(--texto); }
+
+        /* ═══ Cierre ═══ */
+        .final { text-align: center; padding: 130px 0 140px; position: relative; overflow: hidden; isolation: isolate; }
+        .final::before { content: ""; position: absolute; z-index: -1; inset: 0; background: radial-gradient(600px 340px at 50% 45%, rgba(0, 230, 118, .18), transparent 70%); }
+        .radar { position: relative; width: 112px; height: 112px; margin: 0 auto 36px; display: grid; place-items: center; }
+        .radar i { position: absolute; inset: 0; border-radius: 34px; border: 2px solid rgba(0, 230, 118, .6); animation: radar 3.6s ease-out infinite; }
+        .radar i:nth-child(2) { animation-delay: 1.2s; }
+        .radar i:nth-child(3) { animation-delay: 2.4s; }
+        .radar::before { content: ""; position: absolute; inset: -8px; border-radius: 40px; background: conic-gradient(from var(--giro), var(--neon), transparent 40%, var(--lima), transparent 80%, var(--neon)); animation: girar 5s linear infinite; filter: blur(10px); opacity: .8; }
+        .radar img { position: relative; width: 112px; height: 112px; border-radius: 32px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .1), 0 20px 50px -10px rgba(0, 0, 0, .9); }
+        @keyframes radar { from { transform: scale(1); opacity: .9; } to { transform: scale(2.4); opacity: 0; } }
+        .final h2 { margin-bottom: 16px; font-size: clamp(2.2rem, 6vw, 3.6rem); }
+        .final p { margin: 0 auto 36px; color: var(--suave); font-size: 1.15rem; max-width: 30em; }
+
+        .pie { border-top: 1px solid var(--borde); padding: 44px 0 60px; color: var(--tenue); font-size: .92rem; background: var(--tarjeta); }
+        .pie .contenido { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 22px 40px; }
+        .pie p { margin: 6px 0; color: var(--tenue); }
+        .pie .marca { font-size: 1.05rem; }
+        .pie .marca img { width: 30px; height: 30px; border-radius: 9px; }
+        .pie-enlaces { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+        .pie-enlaces a { color: var(--suave); text-decoration: none; font-weight: 600; transition: color .2s; }
+        .pie-enlaces a:hover { color: var(--neon); }
+
+        /* ═══ Aparecer al bajar ═══
+         * Solo donde el navegador sabe ligar animaciones al scroll; en los demás
+         * todo está visible desde el principio. */
+        @supports (animation-timeline: view()) {
+            .revela { animation: revelar linear both; animation-timeline: view(); animation-range: entry 5% cover 28%; }
+            @keyframes revelar { from { opacity: 0; transform: translateY(60px) scale(.96); } to { opacity: 1; transform: none; } }
+        }
+
+        /* ═══ Pantallas por tamaño ═══
+         * Más de 1180: como está arriba. Laptop: los avisos se pegan al teléfono
+         * para no salirse del borde. Tableta y teléfono: una sola columna, con el
+         * teléfono centrado y los avisos colgados de él, no del borde. */
+        @media (max-width: 1180px) {
+            .rota-a { left: -8px; }
+            .rota-b { right: -8px; }
+        }
+        @media (max-width: 960px) {
+            .escena { width: fit-content; margin: 0 auto; }
+            .rota-a { left: -70px; }
+            .rota-b { right: -70px; }
+            .portada { padding: 120px 0 80px; min-height: 0; }
+            .portada .contenido { grid-template-columns: 1fr; gap: 56px; }
+            .portada::before { background: linear-gradient(180deg, rgba(8, 15, 10, .94) 0%, rgba(8, 15, 10, .88) 46%, rgba(8, 15, 10, .3) 66%, rgba(8, 15, 10, .2) 85%, var(--fondo) 100%); }
+            .escena { min-height: 0; }
+            .rejilla { grid-template-columns: 1fr 1fr; }
+            .caja-grande { grid-column: span 2; }
+            .pasos { grid-template-columns: 1fr; }
+            .pasos::before { left: 59px; right: auto; top: 40px; bottom: 40px; width: 3px; height: auto; background: repeating-linear-gradient(180deg, var(--neon) 0 10px, transparent 10px 22px); }
+            .confianza { grid-template-columns: 1fr; padding: 34px 24px; }
+            .seccion { padding: 90px 0; }
+        }
+        @media (max-width: 620px) {
+            .menu a { display: none; }
+            .rejilla { grid-template-columns: 1fr; }
+            .caja-grande { grid-column: auto; }
+            .caja-ancha { grid-template-columns: auto 1fr; }
+            .sirena { display: none; }
+            .telefono { width: 272px; height: 556px; border-radius: 44px; transform: rotateY(-10deg) rotateX(6deg) rotateZ(-2deg); }
+            .pantalla { border-radius: 34px; }
+            .rota-a { left: -20px; top: 30px; }
+            .rota-b { right: -20px; top: 250px; }
+            .caja { padding: 24px; }
+            .caja-grande h3 { font-size: 1.35rem; }
+            .seccion { padding: 72px 0; }
+            .encabezado { margin-bottom: 36px; }
+            .final { padding: 96px 0 104px; }
+        }
+        /* Quien pidió menos movimiento en su teléfono: todo quieto, sin los buses que andan, y un solo aviso de cada lado. */
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+            .movil { display: none; }
+            .ciudad .linea, .mapita .ruta { stroke-dashoffset: 0; }
+            .rota-a:nth-of-type(2), .rota-b:nth-of-type(6) { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<!-- Íconos de Google (Material Icons, rellenos). Se dibujan una vez y se usan con <use>. -->
+<svg width="0" height="0" class="oculto" aria-hidden="true" focusable="false">
+    <symbol id="i-bus" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/></symbol>
+    <symbol id="i-direcciones" viewBox="0 0 24 24"><path d="M21.71 11.29l-9-9c-.39-.39-1.02-.39-1.41 0l-9 9c-.39.39-.39 1.02 0 1.41l9 9c.39.39 1.02.39 1.41 0l9-9c.39-.38.39-1.01 0-1.41zM14 14.5V12h-4v3H8v-4c0-.55.45-1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/></symbol>
+    <symbol id="i-mapa" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></symbol>
+    <symbol id="i-campana" viewBox="0 0 24 24"><path d="M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"/></symbol>
+    <symbol id="i-foro" viewBox="0 0 24 24"><path d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"/></symbol>
+    <symbol id="i-estrella" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></symbol>
+    <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm1 16h-2v-2h2v2zm0-4h-2V7h2v6z"/></symbol>
+    <symbol id="i-caminar" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></symbol>
+    <symbol id="i-lugar" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></symbol>
+    <symbol id="i-semaforo" viewBox="0 0 24 24"><path d="M20 10h-3V8.86c1.72-.45 3-2 3-3.86h-3V4c0-.55-.45-1-1-1H8c-.55 0-1 .45-1 1v1H4c0 1.86 1.28 3.41 3 3.86V10H4c0 1.86 1.28 3.41 3 3.86V15H4c0 1.86 1.28 3.41 3 3.86V20c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1.14c1.72-.45 3-2 3-3.86h-3v-1.14c1.72-.45 3-2 3-3.86zm-8 9c-1.11 0-2-.9-2-2s.89-2 2-2c1.1 0 2 .9 2 2s-.89 2-2 2zm0-5c-1.11 0-2-.9-2-2s.89-2 2-2c1.1 0 2 .9 2 2s-.89 2-2 2zm0-5c-1.11 0-2-.9-2-2 0-1.11.89-2 2-2 1.1 0 2 .89 2 2 0 1.1-.89 2-2 2z"/></symbol>
+    <symbol id="i-desvio" viewBox="0 0 24 24"><path d="M14 4l2.29 2.29-2.88 2.88 1.42 1.42 2.88-2.88L20 10V4zm-4 0H4v6l2.29-2.29 4.71 4.7V20h2v-8.41l-5.29-5.3z"/></symbol>
+    <symbol id="i-averia" viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></symbol>
+    <symbol id="i-alerta" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></symbol>
+    <symbol id="i-gente" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></symbol>
+    <symbol id="i-corazon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></symbol>
+    <symbol id="i-persona" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></symbol>
+    <symbol id="i-candado" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></symbol>
+    <symbol id="i-borrar" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></symbol>
+</svg>
+
+<header class="barra">
+    <div class="contenido">
+        <a class="marca" href="/"><img src="marca/trazia-logo.png" alt="" width="40" height="40">Trazia</a>
+        <nav class="menu" aria-label="Secciones">
+            <a href="#que-hace">Qué hace</a>
+            <a href="#como-funciona">Cómo funciona</a>
+            <a href="#tus-datos">Tus datos</a>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <section class="portada">
+        <!-- El mapa vivo: rutas que se dibujan y buses que las recorren. -->
+        <svg class="ciudad" viewBox="0 0 1440 860" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+                <pattern id="cuadra" width="118" height="88" patternUnits="userSpaceOnUse" patternTransform="rotate(-9)">
+                    <rect x="7" y="7" width="104" height="74" rx="8" fill="rgba(255,255,255,.03)"/>
+                    <rect x="7" y="7" width="48" height="74" rx="8" fill="rgba(255,255,255,.015)"/>
+                </pattern>
+                <path id="r1" d="M-60 640 C 160 620 260 480 420 460 S 690 390 820 300 S 1100 170 1500 150"/>
+                <path id="r2" d="M-60 240 C 170 262 300 345 480 335 S 760 250 905 330 S 1190 530 1500 500"/>
+                <path id="r3" d="M300 -60 C 330 150 250 300 360 425 S 520 650 610 920"/>
+                <path id="r4" d="M1110 -60 C 1060 120 1170 265 1065 405 S 985 650 1130 920"/>
+                <path id="r5" d="M-60 430 C 240 450 520 570 765 548 S 1160 600 1500 720"/>
+                <!-- El marcador de un bus: el ícono de Google adentro de un círculo del color de su ruta. -->
+                <g id="marcador">
+                    <circle class="aura" r="21"/>
+                    <circle class="cuerpo" r="21"/>
+                    <use href="#i-bus" x="-13" y="-13" width="26" height="26" fill="#080f0a"/>
+                </g>
+            </defs>
+            <rect class="manzanas" x="-200" y="-200" width="1840" height="1260"/>
+            <path class="avenida" d="M-60 120 L1500 40 M-60 760 L1500 690 M180 -60 L120 920 M720 -60 L700 920 M1300 -60 L1340 920"/>
+            <path class="calle-chica" d="M-60 340 L1500 260 M-60 560 L1500 470 M450 -60 L410 920 M960 -60 L990 920"/>
+
+            <use href="#r1" class="linea-brillo l1"/><use href="#r2" class="linea-brillo l2"/><use href="#r3" class="linea-brillo l3"/><use href="#r4" class="linea-brillo l4"/><use href="#r5" class="linea-brillo l5"/>
+            <use href="#r1" class="linea l1"/><use href="#r2" class="linea l2"/><use href="#r3" class="linea l3"/><use href="#r4" class="linea l4"/><use href="#r5" class="linea l5"/>
+
+            <circle class="parada p1" cx="420" cy="460" r="7"/><circle class="parada p1" cx="820" cy="300" r="7"/>
+            <circle class="parada p2" cx="480" cy="335" r="7"/><circle class="parada p2" cx="905" cy="330" r="7"/>
+            <circle class="parada p3" cx="360" cy="425" r="7"/>
+            <circle class="parada p4" cx="1065" cy="405" r="7"/>
+            <circle class="parada p5" cx="765" cy="548" r="7"/>
+
+            <g class="movil">
+                <g class="bus b1"><use href="#marcador"/><animateMotion dur="19s" repeatCount="indefinite" begin="-2s"><mpath href="#r1"/></animateMotion></g>
+                <g class="bus b1"><use href="#marcador"/><animateMotion dur="19s" repeatCount="indefinite" begin="-11s"><mpath href="#r1"/></animateMotion></g>
+                <g class="bus b2"><use href="#marcador"/><animateMotion dur="23s" repeatCount="indefinite" begin="-6s"><mpath href="#r2"/></animateMotion></g>
+                <g class="bus b2"><use href="#marcador"/><animateMotion dur="23s" repeatCount="indefinite" begin="-17s" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#r2"/></animateMotion></g>
+                <g class="bus b3"><use href="#marcador"/><animateMotion dur="15s" repeatCount="indefinite" begin="-4s"><mpath href="#r3"/></animateMotion></g>
+                <g class="bus b4"><use href="#marcador"/><animateMotion dur="17s" repeatCount="indefinite" begin="-9s" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#r4"/></animateMotion></g>
+                <g class="bus b5"><use href="#marcador"/><animateMotion dur="21s" repeatCount="indefinite" begin="-1s"><mpath href="#r5"/></animateMotion></g>
+                <g class="bus b5"><use href="#marcador"/><animateMotion dur="21s" repeatCount="indefinite" begin="-12s" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#r5"/></animateMotion></g>
+            </g>
+        </svg>
+
+        <div class="contenido">
+            <div>
+                <p class="chip entra"><svg class="ic"><use href="#i-bus"/></svg>Transporte público · El Salvador</p>
+                <h1 class="entra e1">Sabe qué bus tomar, <em>sin preguntarle a nadie.</em></h1>
+                <p class="bajada entra e2">Trazia te dice qué ruta te lleva, dónde subir, dónde bajar y cuánto caminar. Y la comunidad avisa en vivo lo que pasa en cada ruta.</p>
+                <div class="acciones entra e3">
+                    <span class="boton boton-pronto"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4.2 2.6c-.3.3-.4.7-.4 1.2v16.4c0 .5.1.9.4 1.2l9.1-9.4-9.1-9.4zm10.4 8.1 2.6-2.7L6.6 2c-.4-.2-.8-.3-1.2-.2l9.2 8.9zm0 2.6-9.2 8.9c.4.1.8 0 1.2-.2l10.6-6-2.6-2.7zm5.7-3.3-2.7-1.5-2.8 2.9 2.8 2.9 2.7-1.5c.8-.5.8-2.3 0-2.8z"/></svg><span><small>Muy pronto en</small>Google Play</span></span>
+                    <span class="nota"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Gratis, para Android</span>
+                </div>
+            </div>
+
+            <div class="escena entra e5" aria-hidden="true">
+                <div class="flota">
+                    <div class="telefono">
+                        <div class="pantalla">
+                            <svg class="mapita" viewBox="0 0 266 330" preserveAspectRatio="xMidYMid slice">
+                                <defs><path id="ruta-telefono" d="M60 270 V205 L150 205 L150 150 C175 147 200 140 225 132 V60"/></defs>
+                                <rect class="manzana" x="0" y="0" width="266" height="330"/>
+                                <path class="calle" d="M-10 95 H280 M-10 205 H280 M-10 290 H280 M60 -10 V340 M150 -10 V340 M225 -10 V340 M-10 150 L280 120"/>
+                                <use href="#ruta-telefono" class="ruta-brillo"/>
+                                <path class="a-pie" d="M28 300 L60 270"/>
+                                <use href="#ruta-telefono" class="ruta"/>
+                                <path class="a-pie" d="M225 60 L245 40"/>
+                                <circle class="yo-aura" cx="28" cy="300" r="10"/>
+                                <circle class="yo" cx="28" cy="300" r="7"/>
+                                <circle class="parada" cx="60" cy="270" r="6"/>
+                                <circle class="parada" cx="150" cy="205" r="5"/>
+                                <circle class="parada" cx="225" cy="132" r="5"/>
+                                <circle class="parada" cx="225" cy="60" r="6"/>
+                                <g class="movil bus-tel">
+                                    <circle class="aura" r="12"/>
+                                    <circle class="cuerpo" r="12"/>
+                                    <use href="#i-bus" x="-7.5" y="-7.5" width="15" height="15" fill="#080f0a"/>
+                                    <animateMotion dur="7s" begin="2.5s" repeatCount="indefinite"><mpath href="#ruta-telefono"/></animateMotion>
+                                </g>
+                                <use href="#i-lugar" class="pin" x="230" y="10" width="32" height="32"/>
+                            </svg>
+                            <div class="hoja">
+                                <div class="hoja-titulo"><b>Tu viaje</b><span>38 min</span></div>
+                                <ul class="tramos">
+                                    <li><i class="t-pie"><svg class="ic"><use href="#i-caminar"/></svg></i>Camina a la parada<span class="min">4 min</span></li>
+                                    <li><i class="t-bus"><svg class="ic"><use href="#i-bus"/></svg></i><div>Toma la ruta 101<small>Bájate en la 6.ª parada</small></div><span class="min">30 min</span></li>
+                                    <li><i class="t-fin"><svg class="ic"><use href="#i-lugar"/></svg></i>Llegas a tu destino<span class="min">4 min</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Los reportes de la comunidad, que van cambiando. -->
+                <div class="flotante rota-a cat-trafico"><i><svg class="ic"><use href="#i-semaforo"/></svg></i><div>Tráfico pesado en la 101<small>Aviso de la comunidad · hace 2 min</small></div></div>
+                <div class="flotante rota-a cat-desvio"><i><svg class="ic"><use href="#i-desvio"/></svg></i><div>Desvío en la 29 por obras<small>Aviso de la comunidad · hace 5 min</small></div></div>
+                <div class="flotante rota-a cat-averia"><i><svg class="ic"><use href="#i-averia"/></svg></i><div>Bus averiado en la 42<small>Aviso de la comunidad · hace 1 min</small></div></div>
+                <div class="flotante rota-a cat-manejo"><i><svg class="ic"><use href="#i-alerta"/></svg></i><div>Manejo temerario en la 7<small>Aviso de la comunidad · hace 8 min</small></div></div>
+                <div class="flotante rota-b cat-puntos"><i><svg class="ic"><use href="#i-estrella"/></svg></i><div>+2 puntos<small>Tu reporte ayudó a 2 personas</small></div></div>
+                <div class="flotante rota-b cat-gracias"><i><svg class="ic"><use href="#i-corazon"/></svg></i><div>3 personas dijeron "Gracias"<small>a tu aviso de la 101</small></div></div>
+                <div class="flotante rota-b cat-canal"><i><svg class="ic"><use href="#i-foro"/></svg></i><div>Nuevo en el canal de la 101<small>"¿Ya pasó el de las 6?"</small></div></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="franja">
+        <div class="cinta">
+            <ul>
+                <li><i><svg class="ic" aria-hidden="true"><use href="#i-bus"/></svg></i>Buses y microbuses de todo el país</li>
+                <li><i><svg class="ic" aria-hidden="true"><use href="#i-campana"/></svg></i>Avisos en vivo de la comunidad</li>
+                <li><i><svg class="ic" aria-hidden="true"><use href="#i-escudo"/></svg></i>Botón de pánico</li>
+                <li><i><svg class="ic" aria-hidden="true"><use href="#i-direcciones"/></svg></i>Transbordos y caminatas por calles reales</li>
+                <li><i><svg class="ic" aria-hidden="true"><use href="#i-estrella"/></svg></i>Puntos por ayudar</li>
+                <li><i><svg class="ic" aria-hidden="true"><use href="#i-foro"/></svg></i>Un canal por cada ruta</li>
+            </ul>
+            <!-- La misma lista otra vez, para que la cinta dé la vuelta sin cortes. -->
+            <ul aria-hidden="true">
+                <li><i><svg class="ic"><use href="#i-bus"/></svg></i>Buses y microbuses de todo el país</li>
+                <li><i><svg class="ic"><use href="#i-campana"/></svg></i>Avisos en vivo de la comunidad</li>
+                <li><i><svg class="ic"><use href="#i-escudo"/></svg></i>Botón de pánico</li>
+                <li><i><svg class="ic"><use href="#i-direcciones"/></svg></i>Transbordos y caminatas por calles reales</li>
+                <li><i><svg class="ic"><use href="#i-estrella"/></svg></i>Puntos por ayudar</li>
+                <li><i><svg class="ic"><use href="#i-foro"/></svg></i>Un canal por cada ruta</li>
+            </ul>
+        </div>
+    </div>
+
+    <section class="seccion seccion-brillo" id="que-hace">
+        <div class="contenido">
+            <div class="encabezado revela">
+                <p class="antetitulo">Qué hace</p>
+                <h2>Todo lo que necesitas para <em>moverte en bus.</em></h2>
+                <p>Trazia junta las rutas del país con lo que la gente ve en la calle, para que salgas sabiendo a qué te vas a encontrar.</p>
+            </div>
+            <ul class="rejilla">
+                <li class="caja caja-grande revela">
+                    <div class="icono"><svg class="ic" aria-hidden="true"><use href="#i-direcciones"/></svg></div>
+                    <h3>Calcula tu viaje en segundos</h3>
+                    <p>Dinos a dónde vas y te mostramos las mejores opciones: qué rutas tomar, dónde hacer transbordo, cuánto cuesta el pasaje y cuánto vas a caminar, por calles de verdad y no en línea recta.</p>
+                </li>
+                <li class="caja revela">
+                    <div class="icono icono-azul"><svg class="ic" aria-hidden="true"><use href="#i-mapa"/></svg></div>
+                    <h3>Las rutas del país</h3>
+                    <p>Cientos de rutas con su recorrido en el mapa, sus paradas y su pasaje.</p>
+                </li>
+                <li class="caja revela">
+                    <div class="icono icono-trafico"><svg class="ic" aria-hidden="true"><use href="#i-campana"/></svg></div>
+                    <h3>Avisos en vivo</h3>
+                    <p>Tráfico, desvíos, averías o una parada insegura: lo ves antes de salir.</p>
+                </li>
+                <li class="caja revela">
+                    <div class="icono"><svg class="ic" aria-hidden="true"><use href="#i-foro"/></svg></div>
+                    <h3>Un canal por ruta</h3>
+                    <p>Pregunta y responde con quienes viajan en tu misma ruta, firmando con tu apodo.</p>
+                </li>
+                <li class="caja revela">
+                    <div class="icono icono-lima"><svg class="ic" aria-hidden="true"><use href="#i-estrella"/></svg></div>
+                    <h3>Suma puntos</h3>
+                    <p>Cada reporte que ayuda a otros te da puntos, y los que más ayudan salen en el ranking.</p>
+                </li>
+                <li class="caja caja-ancha revela">
+                    <div class="icono icono-rojo"><svg class="ic" aria-hidden="true"><use href="#i-escudo"/></svg></div>
+                    <h3>Botón de pánico</h3>
+                    <p>Si algo pasa en el camino, un toque envía tu ubicación al equipo de Trazia mientras la alerta siga abierta. Ante una emergencia, llama también al 911.</p>
+                    <div class="sirena" aria-hidden="true"><i></i><i></i><b></b></div>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="seccion" id="como-funciona">
+        <div class="contenido">
+            <div class="encabezado revela">
+                <p class="antetitulo">Cómo funciona</p>
+                <h2>De tu casa a donde vas, <em>en tres pasos.</em></h2>
+            </div>
+            <ol class="pasos">
+                <li class="paso revela">
+                    <h3>Escribe a dónde vas</h3>
+                    <p>Busca el lugar por su nombre o márcalo en el mapa. Trazia sale desde donde estás.</p>
+                </li>
+                <li class="paso revela">
+                    <h3>Elige tu viaje</h3>
+                    <p>Compara las opciones por tiempo, caminata y pasaje, y mira dónde subir y dónde bajar.</p>
+                </li>
+                <li class="paso revela">
+                    <h3>Viaja y avisa</h3>
+                    <p>Sigue el recorrido en el mapa y, si ves algo en la ruta, repórtalo para ayudar a los demás.</p>
+                </li>
+            </ol>
+        </div>
+    </section>
+
+    <section class="seccion" id="tus-datos">
+        <div class="contenido">
+            <div class="confianza revela">
+                <div>
+                    <p class="antetitulo">Tus datos</p>
+                    <h2>Tus datos son tuyos.</h2>
+                    <p>Usamos lo mínimo para que la aplicación funcione, y nunca vendemos tus datos. Todo está explicado en la <a href="/privacidad">política de privacidad</a>.</p>
+                </div>
+                <ul class="garantias">
+                    <li><i><svg class="ic" aria-hidden="true"><use href="#i-persona"/></svg></i><span>Lo que publicas sale con tu <strong>apodo</strong>, nunca con tu nombre ni con tu correo.</span></li>
+                    <li><i><svg class="ic" aria-hidden="true"><use href="#i-candado"/></svg></i><span>Entra con tu correo o con tu <strong>cuenta de Google</strong>, y todo viaja cifrado.</span></li>
+                    <li><i><svg class="ic" aria-hidden="true"><use href="#i-borrar"/></svg></i><span>Borra tu cuenta y todos tus datos <strong>cuando quieras</strong>, desde la app o desde <a href="/eliminar-cuenta">esta página</a>.</span></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="final">
+        <div class="contenido revela">
+            <div class="radar"><i></i><i></i><i></i><img src="marca/trazia-logo.png" alt="Logo de Trazia" width="112" height="112"></div>
+            <h2>Tu próximo viaje <em>empieza aquí.</em></h2>
+            <p>Descarga Trazia y deja de adivinar qué bus tomar.</p>
+            <span class="boton boton-pronto"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4.2 2.6c-.3.3-.4.7-.4 1.2v16.4c0 .5.1.9.4 1.2l9.1-9.4-9.1-9.4zm10.4 8.1 2.6-2.7L6.6 2c-.4-.2-.8-.3-1.2-.2l9.2 8.9zm0 2.6-9.2 8.9c.4.1.8 0 1.2-.2l10.6-6-2.6-2.7zm5.7-3.3-2.7-1.5-2.8 2.9 2.8 2.9 2.7-1.5c.8-.5.8-2.3 0-2.8z"/></svg><span><small>Muy pronto en</small>Google Play</span></span>
+        </div>
+    </section>
+</main>
+
+<footer class="pie">
+    <div class="contenido">
+        <div>
+            <a class="marca" href="/"><img src="marca/trazia-logo.png" alt="" width="30" height="30">Trazia</a>
+            <p>Hecho en El Salvador.</p>
+        </div>
+        <div>
+            <ul class="pie-enlaces">
+                <li><a href="/privacidad">Política de privacidad</a></li>
+                <li><a href="/terminos">Términos de uso</a></li>
+                <li><a href="/eliminar-cuenta">Eliminar cuenta</a></li>
+            </ul>
+            <!-- Cuando haya correo de contacto: <p>¿Preguntas, una ruta que falta o trabajas en transporte? Escríbenos a <a href="mailto:CORREO">CORREO</a>.</p> -->
+        </div>
+    </div>
+</footer>
+</body>
+</html>

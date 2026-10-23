@@ -1,0 +1,63 @@
+---
+import Telefono from "./Telefono.astro";
+
+const puntos = [
+    { icono: "i-escudo", color: "var(--robo)", titulo: "Botón de pánico", texto: "Un toque envía tu ubicación al equipo de Trazia, y la sigue enviando mientras la alerta esté abierta." },
+    { icono: "i-lugar", color: "var(--averia)", titulo: "Paradas inseguras", texto: "La comunidad avisa qué paradas evitar, y lo ves antes de salir de tu casa." },
+    { icono: "i-alerta", color: "var(--manejo)", titulo: "Manejo temerario", texto: "Si el bus va manejando mal, repórtalo: queda en el aviso de la ruta para los demás." },
+];
+---
+<section class="seguridad" id="seguridad">
+    <div class="contenido">
+        <div class="panel">
+            <div class="texto">
+                <p class="previa" data-revela>Viaja seguro</p>
+                <h2 data-revela>Si algo pasa en el camino, <em>no estás solo.</em></h2>
+                <ul class="puntos" data-revela-grupo="0.15">
+                    {puntos.map((p) => (
+                        <li>
+                            <i style={`--c: ${p.color}`}><svg class="ic" aria-hidden="true"><use href={`#${p.icono}`} /></svg></i>
+                            <div><h3>{p.titulo}</h3><p>{p.texto}</p></div>
+                        </li>
+                    ))}
+                </ul>
+                <p class="nota" data-revela>Trazia no reemplaza a los servicios de emergencia: ante una emergencia, llama también al <strong>911</strong>.</p>
+            </div>
+            <div class="lado-telefono" data-revela>
+                <Telefono escala={0.88} pantallas={["alerta"]} />
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .seguridad { padding: 30px 0 20px; }
+    .panel {
+        position: relative; overflow: hidden; display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center;
+        padding: 64px; border-radius: 32px; background: #fdf1f0; border: 1px solid rgba(239, 68, 68, .16);
+    }
+    .panel::before { /* El resplandor rojo detrás del teléfono. */
+        content: ""; position: absolute; width: 560px; height: 560px; right: -60px; top: 50%; margin-top: -280px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(239, 68, 68, .16), transparent 62%);
+    }
+    .texto { position: relative; }
+    .previa { display: inline-flex; margin: 0 0 18px; padding: 6px 14px; border-radius: 999px; background: #fff; border: 1px solid rgba(239, 68, 68, .2); color: #b91c1c; font-size: .82rem; font-weight: 700; }
+    h2 em { color: #c53030; }
+    .puntos { list-style: none; margin: 32px 0 0; padding: 0; display: grid; gap: 14px; }
+    .puntos li { display: flex; gap: 16px; align-items: flex-start; padding: 18px 20px; border-radius: 20px; background: #fff; border: 1px solid var(--borde); }
+    .puntos i { width: 42px; height: 42px; flex: none; border-radius: 50%; display: grid; place-items: center; color: var(--c); background: color-mix(in srgb, var(--c) 14%, #fff); }
+    .puntos h3 { margin: 0 0 4px; font-size: 1.05rem; }
+    .puntos p { margin: 0; color: var(--suave); font-size: .92rem; }
+    .nota { margin: 20px 0 0; color: var(--suave); font-size: .88rem; }
+    .nota strong { color: #b91c1c; }
+    .lado-telefono { position: relative; display: flex; justify-content: center; }
+
+    @media (max-width: 960px) {
+        .panel { grid-template-columns: 1fr; padding: 48px 32px; }
+        .panel::before { top: auto; bottom: -120px; right: 50%; margin: 0 -280px 0 0; }
+    }
+    @media (max-width: 620px) {
+        .panel { padding: 36px 20px; border-radius: 24px; }
+        .lado-telefono :global(.tel) { --escala: .8 !important; }
+    }
+</style>

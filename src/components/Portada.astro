@@ -1,0 +1,105 @@
+---
+import Telefono from "./Telefono.astro";
+import BotonPlay from "./BotonPlay.astro";
+
+/*
+ * LAS RUTAS DEL FONDO, sobre 1200 × 1150. Son curvas en U que entran por un
+ * costado (por debajo de la barra), pasan por debajo del texto y detrás del
+ * teléfono, y salen por el otro. Los buses las recorren (animations.ts, data-bus).
+ */
+const rutas = [
+    { d: "M-40 160 C120 170 220 600 600 640 C980 600 1080 170 1240 160", color: "var(--neon)" },
+    { d: "M-40 340 C200 360 300 760 600 780 C900 760 1000 360 1240 340", color: "var(--desvio)" },
+    { d: "M-40 620 C200 640 350 960 600 960 C850 960 1000 640 1240 620", color: "var(--averia)" },
+];
+
+/* Los buses: en qué ruta van, desde qué punto de ella arrancan (0 a 1),
+   cuánto tardan en recorrerla y si van de vuelta. `x`/`y` es dónde se ven
+   sin JavaScript, sobre su ruta. */
+const buses = [
+    { ruta: 0, desde: 0.2, duracion: 22, x: 198, y: 389 },
+    { ruta: 0, desde: 0.75, duracion: 22, vuelta: true, x: 1002, y: 389 },
+    { ruta: 1, desde: 0.35, duracion: 20, x: 257, y: 560 },
+    { ruta: 1, desde: 0.85, duracion: 20, vuelta: true, x: 943, y: 560 },
+    { ruta: 2, desde: 0.55, duracion: 24, x: 300, y: 770 },
+    { ruta: 2, desde: 0.1, duracion: 24, vuelta: true, x: 900, y: 770 },
+];
+---
+<section class="portada" id="inicio">
+    <div class="lineas" aria-hidden="true" data-hero>
+        <svg viewBox="0 0 1200 1150" preserveAspectRatio="xMidYMin slice">
+            {rutas.map((r) => <path class="ruta" style={`--color: ${r.color}`} d={r.d} pathLength="1" data-linea />)}
+            {buses.map((b) => (
+                <g
+                    class="bus"
+                    style={`--color: ${rutas[b.ruta].color}`}
+                    transform={`translate(${b.x} ${b.y})`}
+                    data-bus
+                    data-ruta={b.ruta}
+                    data-desde={b.desde}
+                    data-duracion={b.duracion}
+                    data-vuelta={b.vuelta ? "" : undefined}
+                >
+                    <circle class="halo" r="30" />
+                    <circle class="cuerpo" r="20" />
+                    <use href="#i-bus" x="-12" y="-12" width="24" height="24" />
+                </g>
+            ))}
+        </svg>
+    </div>
+
+    <div class="contenido">
+        <p class="insignia" data-hero data-hero-pieza>Transporte público · El Salvador</p>
+        <h1 data-hero data-hero-titulo>Sabe qué bus tomar, <em>sin preguntarle a nadie.</em></h1>
+        <p class="bajada" data-hero data-hero-pieza>Trazia te dice qué ruta te lleva, dónde subir, dónde bajar y cuánto caminar. Y la comunidad avisa en vivo lo que pasa en cada ruta.</p>
+        <div class="acciones" data-hero data-hero-pieza>
+            <BotonPlay />
+            <span class="nota"><svg class="ic" aria-hidden="true"><use href="#i-check" /></svg>Gratis, para Android</span>
+        </div>
+    </div>
+
+    <div class="escenario" data-hero data-hero-telefono>
+        <Telefono />
+    </div>
+</section>
+
+<style>
+    .portada { position: relative; padding-top: 150px; text-align: center; }
+    .lineas { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+    .lineas > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .ruta { fill: none; stroke: var(--color); stroke-width: 2; stroke-linecap: round; opacity: .32; }
+    .bus .halo { fill: var(--color); opacity: .18; }
+    .bus .cuerpo { fill: var(--color); stroke: #fff; stroke-width: 3; }
+    .bus use { fill: var(--oscuro); }
+
+    .insignia {
+        display: inline-flex; margin: 0 0 24px; padding: 7px 16px; border-radius: 999px;
+        border: 1px solid var(--borde-fuerte); background: rgba(255, 255, 255, .7); color: var(--texto); font-size: .85rem; font-weight: 600;
+    }
+    h1 { margin: 0 auto 20px; max-width: 15ch; font-size: clamp(2.4rem, 5.4vw, 4.1rem); line-height: 1.05; }
+    .bajada { margin: 0 auto 32px; max-width: 34em; color: var(--suave); font-size: clamp(1rem, 1.6vw, 1.12rem); }
+    .acciones { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px 22px; }
+    .nota { display: inline-flex; align-items: center; gap: 8px; color: var(--suave); font-size: .92rem; }
+    .nota .ic { width: 20px; height: 20px; color: var(--verde-oscuro); }
+
+    /* El teléfono, con la parte de abajo esfumándose como la mano de la referencia. */
+    .escenario {
+        position: relative; height: 560px; margin-top: 60px; display: flex; justify-content: center;
+        -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent);
+        mask-image: linear-gradient(180deg, #000 72%, transparent);
+    }
+    .escenario::before {
+        content: ""; position: absolute; z-index: -1; width: 640px; height: 640px; left: 50%; top: 40px; margin-left: -320px;
+        border-radius: 50%; background: radial-gradient(circle, rgba(0, 230, 118, .18), transparent 62%);
+    }
+
+    /* En pantallas angostas las rutas pasarían por detrás del texto: no se muestran. */
+    @media (max-width: 960px) {
+        .portada { padding-top: 120px; }
+        .lineas { display: none; }
+    }
+    @media (max-width: 620px) {
+        .escenario { height: 480px; margin-top: 48px; }
+        .escenario :global(.tel) { --escala: .84 !important; }
+    }
+</style>

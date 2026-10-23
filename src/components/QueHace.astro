@@ -1,0 +1,141 @@
+---
+import Telefono from "./Telefono.astro";
+
+const extras = [
+    { icono: "i-mapa", titulo: "Las rutas del país", texto: "Cientos de rutas con su recorrido en el mapa, sus paradas y su pasaje." },
+    { icono: "i-estrella", titulo: "Suma puntos", texto: "Cada reporte que ayuda a otros te da puntos, y los que más ayudan salen en el ranking." },
+];
+---
+<section class="seccion" id="que-hace">
+    <div class="contenido">
+        <div class="intro">
+            <p data-revela>Trazia junta las rutas del país con lo que la gente ve en la calle, para que salgas sabiendo a qué te vas a encontrar.</p>
+            <div class="titulo" data-revela>
+                <span class="flecha" aria-hidden="true"><svg class="ic"><use href="#i-flecha-abajo" /></svg></span>
+                <h2>Todo lo que necesitas para <em>moverte en bus.</em></h2>
+            </div>
+        </div>
+
+        <ul class="tarjetas" data-revela-grupo="0.15">
+            <li class="elevable">
+                <article class="tarjeta">
+                    <span class="tarjeta-icono"><svg class="ic" aria-hidden="true"><use href="#i-direcciones" /></svg></span>
+                    <h3>Calcula tu viaje en segundos</h3>
+                    <p>Qué rutas tomar, dónde hacer transbordo, cuánto cuesta el pasaje y cuánto vas a caminar, por calles de verdad.</p>
+                    <div class="visual visual-telefono"><Telefono escala={0.72} pantallas={["itinerario"]} /></div>
+                </article>
+            </li>
+            <li class="elevable">
+                <article class="tarjeta tono-acento">
+                    <span class="tarjeta-icono"><svg class="ic" aria-hidden="true"><use href="#i-campana" /></svg></span>
+                    <h3>Avisos en vivo</h3>
+                    <p>Tráfico, desvíos, averías o una parada insegura: lo ves antes de salir.</p>
+                    <ul class="visual avisos" aria-hidden="true">
+                        <li style="--color: var(--trafico)"><i><svg class="ic"><use href="#i-semaforo" /></svg></i><div>Tráfico pesado en la 101<small>hace 2 min</small></div></li>
+                        <li style="--color: var(--desvio)"><i><svg class="ic"><use href="#i-desvio" /></svg></i><div>Desvío en la 29 por obras<small>hace 5 min</small></div></li>
+                        <li style="--color: var(--averia)"><i><svg class="ic"><use href="#i-averia" /></svg></i><div>Bus averiado en la 42<small>hace 1 min</small></div></li>
+                        <li style="--color: var(--manejo)"><i><svg class="ic"><use href="#i-alerta" /></svg></i><div>Manejo temerario en la 7<small>hace 8 min</small></div></li>
+                    </ul>
+                </article>
+            </li>
+            <li class="elevable">
+                <article class="tarjeta tono-canal">
+                    <span class="tarjeta-icono"><svg class="ic" aria-hidden="true"><use href="#i-foro" /></svg></span>
+                    <h3>Un canal por ruta</h3>
+                    <p>Pregunta y responde con quienes viajan en tu misma ruta, firmando con tu apodo.</p>
+                    <div class="visual canal" aria-hidden="true">
+                        <p class="canal-ruta"><b>101</b>Canal de la Ruta 101</p>
+                        <div class="burbuja"><small>kari_sv</small>¿Ya pasó el de las 6?</div>
+                        <div class="burbuja mia"><small>Tú</small>Sí, va por la Masferrer, como a 5 min</div>
+                        <div class="burbuja"><small>don_beto</small>Gracias 🙌</div>
+                    </div>
+                </article>
+            </li>
+        </ul>
+
+        <ul class="extras" data-revela-grupo="0.15">
+            {extras.map((e) => (
+                <li class="elevable">
+                    <span class="extra-icono"><svg class="ic" aria-hidden="true"><use href={`#${e.icono}`} /></svg></span>
+                    <div><h3>{e.titulo}</h3><p>{e.texto}</p></div>
+                </li>
+            ))}
+        </ul>
+    </div>
+</section>
+
+<style>
+    .seccion { padding: 110px 0 60px; }
+    .intro { display: grid; grid-template-columns: 1fr 1.25fr; gap: 32px 64px; align-items: center; margin-bottom: 56px; }
+    .intro > p { margin: 0; max-width: 26em; color: var(--suave); }
+    .titulo { display: flex; align-items: center; gap: 24px; }
+    .flecha { width: 48px; height: 48px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--oscuro); color: #fff; }
+
+    .tarjetas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    .tarjetas > li { border-radius: 30px; }
+    .tarjeta {
+        position: relative; height: 470px; overflow: hidden; border-radius: inherit; padding: 28px 28px 0;
+        background: linear-gradient(180deg, var(--tarjeta-2), var(--tarjeta)); border: 1px solid var(--borde);
+        display: flex; flex-direction: column; align-items: flex-end; text-align: right;
+    }
+    .tono-acento { background: var(--acento-claro); border-color: rgba(0, 230, 118, .25); }
+    .tono-canal { background: #e8f0ff; border-color: rgba(59, 130, 246, .2); }
+    .tarjeta-icono { flex: none; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--oscuro); color: #fff; }
+    .tarjeta-icono .ic { width: 22px; height: 22px; }
+    .tarjeta h3 { margin: 18px 0 8px; font-size: 1.45rem; line-height: 1.15; max-width: 11em; }
+    .tarjeta p { margin: 0; color: var(--suave); font-size: .92rem; max-width: 22em; }
+    .visual { margin-top: auto; align-self: stretch; }
+
+    .visual-telefono { position: relative; height: 230px; }
+    .visual-telefono :global(.tel) { position: absolute; left: 18px; top: 58px; transform: rotate(-14deg); transform-origin: 0 0; }
+
+    .avisos { list-style: none; padding: 0 0 30px; display: grid; gap: 10px; text-align: left; }
+    .avisos li {
+        display: flex; align-items: center; gap: 11px; padding: 10px 14px 10px 10px; border-radius: 16px;
+        background: #fff; border: 1px solid var(--borde); box-shadow: 0 10px 24px -16px rgba(17, 24, 39, .3); font-size: .82rem; font-weight: 700;
+    }
+    .avisos li:nth-child(even) { margin-left: 22px; margin-right: -12px; }
+    .avisos small { display: block; color: var(--tenue); font-weight: 500; font-size: .72rem; }
+    .avisos i { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; flex: none; color: #fff; background: var(--color); }
+    .avisos i .ic { width: 20px; height: 20px; }
+
+    /* El chat del canal: burbujas firmadas con el apodo. */
+    .canal { display: flex; flex-direction: column; gap: 10px; padding-bottom: 30px; text-align: left; }
+    .canal-ruta { display: flex; align-items: center; gap: 8px; margin: 0 0 2px; font-size: .78rem; font-weight: 700; color: var(--suave); }
+    .canal-ruta b { padding: 2px 8px; border-radius: 7px; background: var(--neon); color: var(--oscuro); font-size: .72rem; }
+    .burbuja {
+        align-self: flex-start; max-width: 85%; padding: 9px 13px; border-radius: 16px 16px 16px 4px;
+        background: #fff; border: 1px solid var(--borde); box-shadow: 0 10px 24px -16px rgba(17, 24, 39, .3); font-size: .86rem; font-weight: 600;
+    }
+    .burbuja small { display: block; color: var(--desvio); font-size: .7rem; font-weight: 700; }
+    .burbuja.mia { align-self: flex-end; border-radius: 16px 16px 4px 16px; background: var(--oscuro); color: #fff; border-color: transparent; }
+    .burbuja.mia small { color: var(--lima); }
+
+    .extras { list-style: none; margin: 22px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+    .extras li { display: flex; gap: 16px; align-items: flex-start; padding: 22px; border-radius: 22px; background: var(--tarjeta); border: 1px solid var(--borde); }
+    .extra-icono { width: 42px; height: 42px; flex: none; border-radius: 13px; display: grid; place-items: center; color: var(--oscuro); background: var(--neon); }
+    .extras h3 { margin: 0 0 4px; font-size: 1.05rem; }
+    .extras p { margin: 0; color: var(--suave); font-size: .9rem; }
+
+    @media (max-width: 960px) {
+        .intro { grid-template-columns: 1fr; }
+        .intro > p { order: 2; }
+        .tarjetas { grid-template-columns: 1fr 1fr; }
+        .tarjetas > li:last-child { grid-column: span 2; }
+    }
+    /* Tableta: la tarjeta que ocupa todo el ancho va en dos columnas, el chat a un lado. */
+    @media (min-width: 621px) and (max-width: 960px) {
+        .tarjetas > li:last-child .tarjeta {
+            height: auto; padding-bottom: 28px; display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; align-content: center; justify-items: end;
+        }
+        .tarjetas > li:last-child .canal { grid-column: 1; grid-row: 1 / span 3; padding: 0; justify-self: stretch; margin: 0; }
+    }
+    @media (max-width: 620px) {
+        .seccion { padding: 80px 0 40px; }
+        .titulo { gap: 16px; }
+        .flecha { width: 40px; height: 40px; }
+        .tarjetas, .extras { grid-template-columns: 1fr; }
+        .tarjetas > li:last-child { grid-column: auto; }
+        .tarjeta { height: 440px; }
+    }
+</style>
