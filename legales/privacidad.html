@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Qué datos guarda Trazia, para qué los usa, con quién se comparten y cómo borrarlos.">
+    <title>Política de privacidad de Trazia</title>
+    <style nonce="{{NONCE}}">
+        :root {
+            color-scheme: light dark;
+            --fondo: #f4f7f5; --papel: #ffffff; --texto: #14201a; --suave: #3d4d45; --tenue: #66766e;
+            --borde: #dde5e1; --marca: #0a8a54; --marca-texto: #08704a; --marca-fondo: #e9f6ef;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --fondo: #0e1316; --papel: #151c21; --texto: #e8eef0; --suave: #c4ced3; --tenue: #93a4ad;
+                --borde: #26313a; --marca: #19e68c; --marca-texto: #52e9a7; --marca-fondo: #10271c;
+            }
+        }
+        * { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; scroll-padding-top: 16px; }
+        body {
+            margin: 0; background: var(--fondo); color: var(--texto);
+            font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        a { color: var(--marca-texto); text-underline-offset: 2px; }
+        a:focus-visible { outline: 2px solid var(--marca); outline-offset: 2px; border-radius: 2px; }
+        .contenido { max-width: 780px; margin: 0 auto; padding: 0 16px; }
+
+        .cabecera { background: var(--papel); border-bottom: 1px solid var(--borde); }
+        .cabecera .contenido {
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+            gap: 8px 24px; padding-top: 14px; padding-bottom: 14px;
+        }
+        .logo { display: inline-flex; align-items: center; gap: 10px; color: var(--texto); text-decoration: none; font-weight: 700; font-size: 1.15rem; letter-spacing: -.01em; }
+        .logo-marca { width: 28px; height: 28px; border-radius: 8px; background: var(--marca); display: inline-grid; place-items: center; }
+        .logo-marca::after { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 3px solid var(--papel); }
+        .menu { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: .95rem; }
+        .menu a { color: var(--suave); text-decoration: none; padding: 4px 0; border-bottom: 2px solid transparent; }
+        .menu a:hover { color: var(--texto); }
+        .menu a[aria-current="page"] { color: var(--texto); font-weight: 600; border-bottom-color: var(--marca); }
+
+        .portada { padding: 40px 0 24px; }
+        .etiqueta { margin: 0 0 8px; color: var(--marca-texto); font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+        h1 { margin: 0 0 12px; font-size: clamp(1.8rem, 6vw, 2.5rem); line-height: 1.15; letter-spacing: -.02em; }
+        .fecha { margin: 0; color: var(--tenue); font-size: .92rem; }
+
+        .hoja { background: var(--papel); border: 1px solid var(--borde); border-radius: 16px; padding: 8px 32px 32px; margin-bottom: 40px; }
+        .intro { font-size: 1.08rem; color: var(--suave); margin: 24px 0; }
+        .resumen { background: var(--marca-fondo); border-left: 4px solid var(--marca); border-radius: 10px; padding: 16px 20px; margin: 24px 0; }
+        .resumen .titulo { margin: 0 0 6px; font-weight: 700; }
+        .resumen ul { margin: 0; }
+        .indice { border: 1px solid var(--borde); border-radius: 10px; padding: 16px 20px; margin: 24px 0 8px; }
+        .indice .titulo { margin: 0 0 6px; font-weight: 700; font-size: .95rem; }
+        .indice ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+        .indice li { margin: 3px 0; break-inside: avoid; }
+        .indice a { text-decoration: none; }
+        .indice a:hover { text-decoration: underline; }
+
+        section { border-top: 1px solid var(--borde); padding-top: 8px; margin-top: 32px; }
+        h2 { font-size: 1.2rem; line-height: 1.3; margin: 20px 0 10px; letter-spacing: -.01em; }
+        h3 { font-size: 1.02rem; line-height: 1.35; margin: 24px 0 8px; }
+        p, li { color: var(--suave); }
+        strong { color: var(--texto); }
+        ul, ol { padding-left: 22px; margin: 8px 0; }
+        li { margin: 8px 0; }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 12px 0; border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; font-size: .97rem; }
+        th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--borde); }
+        th { background: var(--fondo); color: var(--tenue); font-size: .82rem; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; }
+        tr:last-child td { border-bottom: 0; }
+        td:first-child { color: var(--suave); }
+        td:last-child { color: var(--texto); white-space: nowrap; }
+
+        .pie { padding: 0 0 48px; color: var(--tenue); font-size: .92rem; }
+        .pie p { color: var(--tenue); margin: 6px 0; }
+        .pie .firma { margin-top: 14px; }
+
+        @media (max-width: 600px) {
+            .hoja { padding: 4px 18px 24px; border-radius: 12px; }
+            .indice ol { columns: 1; }
+            .portada { padding-top: 28px; }
+            td:last-child { white-space: normal; }
+        }
+        @media print {
+            .menu, .indice { display: none; }
+            body, .hoja, .cabecera { background: #fff; color: #000; border: 0; }
+            a { color: inherit; }
+        }
+    </style>
+</head>
+<body>
+<header class="cabecera">
+    <div class="contenido">
+        <a class="logo" href="/privacidad"><span class="logo-marca" aria-hidden="true"></span>Trazia</a>
+        <nav class="menu" aria-label="Páginas legales">
+            <a href="/privacidad" aria-current="page">Privacidad</a>
+            <a href="/terminos">Términos de uso</a>
+            <a href="/eliminar-cuenta">Eliminar cuenta</a>
+        </nav>
+    </div>
+</header>
+
+<main class="contenido">
+    <div class="portada">
+        <p class="etiqueta">Documento legal</p>
+        <h1>Política de privacidad</h1>
+        <p class="fecha">Vigente desde el 16 de octubre de 2026 · Última actualización: 22 de octubre de 2026</p>
+    </div>
+
+    <article class="hoja">
+        <p class="intro">Trazia es una aplicación para moverte en bus por El Salvador: te ayuda a encontrar cómo llegar de un lugar a otro, muestra los reportes de la comunidad sobre las rutas e incluye un botón de pánico. En esta página te explicamos qué datos tuyos guardamos, para qué los usamos, con quién se comparten y cómo puedes borrarlos.</p>
+
+        <div class="resumen">
+            <p class="titulo">En resumen</p>
+            <ul>
+                <li><strong>No vendemos tus datos personales, no los usamos para publicidad personalizada y no se los damos a los comercios que aparecen en la aplicación.</strong></li>
+                <li>Con el uso de la aplicación elaboramos estadísticas anónimas, como las rutas más usadas o las zonas sin buses, que pueden servir para mejorar el transporte público. Nunca permiten identificarte.</li>
+                <li>La aplicación usa tu ubicación solo mientras está abierta, nunca en segundo plano.</li>
+                <li>Lo que publicas se muestra con tu apodo, nunca con tu nombre ni con tu correo.</li>
+                <li>Puedes borrar tu cuenta y todos tus datos cuando quieras.</li>
+            </ul>
+        </div>
+
+        <nav class="indice" aria-label="Contenido">
+            <p class="titulo">Contenido</p>
+            <ol>
+                <li><a href="#datos">Qué datos guardamos</a></li>
+                <li><a href="#ubicacion">Tu ubicación</a></li>
+                <li><a href="#usos">Para qué los usamos</a></li>
+                <li><a href="#plazos">Cuánto tiempo los guardamos</a></li>
+                <li><a href="#terceros">Con quién se comparten</a></li>
+                <li><a href="#proteccion">Cómo los protegemos</a></li>
+                <li><a href="#derechos">Tus derechos y cómo borrar tu cuenta</a></li>
+                <li><a href="#menores">Menores de edad</a></li>
+                <li><a href="#cambios">Cambios a esta política</a></li>
+            </ol>
+        </nav>
+
+        <section id="datos">
+            <h2>1. Qué datos guardamos</h2>
+            <ul>
+                <li><strong>Tu cuenta:</strong> correo, nombre, teléfono y el apodo con el que firmas en público (y el apellido, si lo agregas). No guardamos tu contraseña: guardamos un resumen cifrado (BCrypt) que solo sirve para comprobar si la que escribes es la correcta. Si entras con Google, Google nos confirma tu correo, tu nombre y un identificador de tu cuenta de Google; no recibimos tu contraseña de Google ni ningún otro dato de esa cuenta.</li>
+                <li><strong>Tu historial de viajes:</strong> los viajes que elegiste, con el origen, el destino, sus coordenadas, los buses y el pasaje, para que puedas verlos y repetirlos desde cualquier teléfono.</li>
+                <li><strong>Lo que publicas:</strong> reportes sobre las rutas (con el lugar y la ubicación que les pongas), respuestas, reacciones, mensajes en los canales de cada ruta y reseñas de comercios. Las demás personas ven todo esto junto a tu apodo, nunca junto a tu nombre ni a tu correo.</li>
+                <li><strong>Denuncias y bloqueos:</strong> cuando denuncias algo, guardamos el motivo que escribiste y una copia de lo denunciado para que el equipo lo revise; la persona denunciada no sabe quién la denunció. Cuando bloqueas a alguien, guardamos a quién bloqueaste para no mostrarte lo que publica; esa persona no se entera.</li>
+                <li><strong>Sugerencias</strong> que le envíes al equipo. Son privadas: solo las lee el equipo de Trazia.</li>
+                <li><strong>Alertas del botón de pánico:</strong> tu ubicación al presionarlo y las que siguen mientras la alerta está abierta, junto con el nombre y el teléfono de tu cuenta, si la usaste con la sesión iniciada. Solo las ve el equipo que las atiende. Por ahora Trazia no envía las alertas a la policía ni a otra institución: ante una emergencia, llama también al 911.</li>
+                <li><strong>Puntos de la comunidad:</strong> los que ganaste por tus reportes y tu lugar en el ranking.</li>
+                <li><strong>Búsquedas de viajes, sin tu identidad:</strong> cuando calculas un viaje, el origen y el destino se envían al servidor para encontrar las rutas. Guardamos un registro de cada búsqueda con las coordenadas redondeadas a unos 100 metros y sin ningún dato de tu cuenta, para saber qué zonas no tienen cobertura de buses. Ese registro no se puede relacionar contigo.</li>
+                <li><strong>Datos técnicos:</strong> la dirección IP de cada solicitud, que usamos para frenar abusos (por ejemplo, para limitar los intentos de contraseña) y que puede quedar en los registros técnicos del servidor durante un tiempo limitado. En el teléfono, la aplicación guarda dos identificadores aleatorios: el de tu sesión, para no pedirte la contraseña cada vez, y otro que marca tu teléfono como conocido, para que los intentos fallidos de otra persona no te bloqueen el acceso a tu cuenta. Ninguno se copia a respaldos en la nube ni pasa a otro teléfono.</li>
+            </ul>
+        </section>
+
+        <section id="ubicacion">
+            <h2>2. Tu ubicación</h2>
+            <p>Trazia usa la ubicación del teléfono solo mientras la aplicación está abierta, nunca en segundo plano. Se envía al servidor únicamente en estos casos:</p>
+            <ul>
+                <li>Cuando calculas un viaje, con el origen y el destino.</li>
+                <li>Cuando guardas un viaje en tu historial, con las coordenadas del origen y del destino.</li>
+                <li>Cuando publicas un reporte con ubicación.</li>
+                <li>Cuando presionas el botón de pánico: la ubicación de ese momento y, mientras la alerta siga abierta y la aplicación esté en pantalla, una actualización cada 15 segundos.</li>
+            </ul>
+            <p>Para mostrarte comercios cerca de tu destino, la aplicación envía la coordenada del destino elegido (no la de tu teléfono), y no se guarda. Cuando buscas un lugar por nombre, se envía el texto que escribes.</p>
+        </section>
+
+        <section id="usos">
+            <h2>3. Para qué los usamos</h2>
+            <ul>
+                <li>Para que la aplicación funcione: calcular viajes, mostrar tu historial y lo que publica la comunidad, y atender las alertas del botón de pánico.</li>
+                <li>Para proteger las cuentas y frenar abusos, como el spam o los intentos de entrar a cuentas ajenas.</li>
+                <li>Para moderar lo que se publica cuando alguien lo denuncia, y hacer cumplir los <a href="/terminos">términos de uso</a>.</li>
+                <li>Para mejorar el servicio con estadísticas que no identifican a nadie, como las zonas donde faltan rutas.</li>
+                <li>Para elaborar estadísticas agregadas y anónimas sobre la movilidad y el estado del transporte público (ver <a href="#estadisticas">Estadísticas anónimas</a>).</li>
+            </ul>
+        </section>
+
+        <section id="plazos">
+            <h2>4. Cuánto tiempo los guardamos</h2>
+            <table>
+                <thead>
+                    <tr><th scope="col">Dato</th><th scope="col">Se guarda</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Mensajes de los canales</td><td>24 horas</td></tr>
+                    <tr><td>Reportes, sus respuestas y reacciones</td><td>30 días</td></tr>
+                    <tr><td>Alertas del botón de pánico</td><td>30 días</td></tr>
+                    <tr><td>Denuncias</td><td>30 días, o menos si el equipo las resuelve antes</td></tr>
+                    <tr><td>Sesiones abiertas</td><td>30 días desde que iniciaste sesión</td></tr>
+                    <tr><td>Puntos de la comunidad</td><td>Alrededor de un año</td></tr>
+                    <tr><td>Registro de búsquedas sin identidad</td><td>400 días</td></tr>
+                    <tr><td>Tu cuenta, tu historial de viajes, tus reseñas, tus sugerencias y tus bloqueos</td><td>Hasta que borres tu cuenta</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="terceros">
+            <h2>5. Con quién se comparten</h2>
+            <p>Usamos estos proveedores para prestar el servicio. Reciben solo lo necesario para su tarea y no pueden usar tus datos para otros fines:</p>
+            <ul>
+                <li><strong>Railway</strong>, donde funciona el servidor de Trazia.</li>
+                <li><strong>MongoDB Atlas</strong>, donde se guarda la base de datos, en servidores de Amazon Web Services en los Estados Unidos.</li>
+                <li><strong>Google:</strong> el mapa de la aplicación es de Google Maps, y el texto que escribes en el buscador de lugares se consulta a Google Places, junto con un identificador aleatorio que agrupa una sola búsqueda y no está ligado a tu cuenta. Si eliges entrar con Google, el inicio de sesión lo hace Google y se rige también por su política de privacidad.</li>
+                <li><strong>Geoapify</strong>, que también se consulta para buscar lugares por nombre.</li>
+            </ul>
+            <p>Por eso tus datos pueden guardarse o procesarse fuera de El Salvador, principalmente en los Estados Unidos. Fuera de estos casos y de las estadísticas anónimas que se describen a continuación, solo entregaríamos datos si una autoridad competente lo exige conforme a la ley.</p>
+
+            <h3 id="estadisticas">Estadísticas anónimas</h3>
+            <p>A partir del uso de la aplicación y de los reportes de la comunidad elaboramos estadísticas agregadas y anónimas, por ejemplo: las zonas, los municipios y los horarios con más uso; las rutas más buscadas; las zonas donde se buscan viajes y no hay buses; las rutas que la comunidad reporta como fuera de servicio, y los problemas reportados en las vías, como baches.</p>
+            <p>Estas estadísticas <strong>no incluyen tu nombre, tu correo, tu teléfono, tu apodo ni tus viajes individuales</strong>, solo muestran totales de muchas personas y no permiten identificarte. Podemos compartirlas con instituciones públicas, municipalidades, empresas de transporte u otras organizaciones que trabajen en movilidad, en el marco de convenios de colaboración o de acuerdos comerciales.</p>
+        </section>
+
+        <section id="proteccion">
+            <h2>6. Cómo los protegemos</h2>
+            <p>Toda la comunicación entre la aplicación y el servidor viaja cifrada (HTTPS). Las contraseñas y las sesiones se guardan como resúmenes cifrados, de modo que una copia de la base de datos no sirve para entrar a ninguna cuenta. El acceso de administración requiere contraseña y un segundo factor de verificación.</p>
+        </section>
+
+        <section id="derechos">
+            <h2>7. Tus derechos y cómo borrar tu cuenta</h2>
+            <p>Puedes ver y cambiar los datos de tu perfil desde la aplicación. También puedes borrar tu cuenta cuando quieras, desde la aplicación (Perfil → Eliminar cuenta) o desde la web, en <a href="/eliminar-cuenta">la página para eliminar tu cuenta</a>.</p>
+            <p>Al borrarla se eliminan en ese momento tu cuenta y todo lo que dejaste en el servidor: historial, reportes, mensajes, reseñas, sugerencias, puntos, alertas, denuncias y bloqueos. Solo queda el registro de búsquedas sin identidad, que nunca estuvo asociado a ti.</p>
+        </section>
+
+        <section id="menores">
+            <h2>8. Menores de edad</h2>
+            <p>Trazia no está dirigida a menores de 13 años y no guardamos a sabiendas datos de menores de esa edad. Si crees que un menor nos dio sus datos, escríbenos y los borraremos.</p>
+        </section>
+
+        <section id="cambios">
+            <h2>9. Cambios a esta política</h2>
+            <p>Si cambiamos lo que hacemos con tus datos, actualizaremos esta página y la fecha de arriba. Si el cambio es importante, también te avisaremos en la aplicación.</p>
+        </section>
+    </article>
+</main>
+
+<footer class="pie">
+    <div class="contenido">
+        {{CONTACTO}}
+        <p class="firma">Trazia · El Salvador</p>
+    </div>
+</footer>
+</body>
+</html>

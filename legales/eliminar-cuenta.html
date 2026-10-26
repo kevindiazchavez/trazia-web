@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>Eliminar tu cuenta de Trazia</title>
+    <style nonce="{{NONCE}}">
+        :root {
+            color-scheme: light dark;
+            --fondo: #f4f7f5; --papel: #ffffff; --texto: #14201a; --suave: #3d4d45; --tenue: #66766e;
+            --borde: #dde5e1; --marca: #0a8a54; --marca-texto: #08704a; --marca-fondo: #e9f6ef;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --fondo: #0e1316; --papel: #151c21; --texto: #e8eef0; --suave: #c4ced3; --tenue: #93a4ad;
+                --borde: #26313a; --marca: #19e68c; --marca-texto: #52e9a7; --marca-fondo: #10271c;
+            }
+        }
+        * { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; scroll-padding-top: 16px; }
+        body {
+            margin: 0; background: var(--fondo); color: var(--texto);
+            font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        a { color: var(--marca-texto); text-underline-offset: 2px; }
+        a:focus-visible { outline: 2px solid var(--marca); outline-offset: 2px; border-radius: 2px; }
+        .contenido { max-width: 780px; margin: 0 auto; padding: 0 16px; }
+
+        .cabecera { background: var(--papel); border-bottom: 1px solid var(--borde); }
+        .cabecera .contenido {
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+            gap: 8px 24px; padding-top: 14px; padding-bottom: 14px;
+        }
+        .logo { display: inline-flex; align-items: center; gap: 10px; color: var(--texto); text-decoration: none; font-weight: 700; font-size: 1.15rem; letter-spacing: -.01em; }
+        .logo-marca { width: 28px; height: 28px; border-radius: 8px; background: var(--marca); display: inline-grid; place-items: center; }
+        .logo-marca::after { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 3px solid var(--papel); }
+        .menu { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: .95rem; }
+        .menu a { color: var(--suave); text-decoration: none; padding: 4px 0; border-bottom: 2px solid transparent; }
+        .menu a:hover { color: var(--texto); }
+        .menu a[aria-current="page"] { color: var(--texto); font-weight: 600; border-bottom-color: var(--marca); }
+
+        .portada { padding: 40px 0 24px; }
+        .etiqueta { margin: 0 0 8px; color: var(--marca-texto); font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+        h1 { margin: 0 0 12px; font-size: clamp(1.8rem, 6vw, 2.5rem); line-height: 1.15; letter-spacing: -.02em; }
+        .fecha { margin: 0; color: var(--tenue); font-size: .92rem; }
+
+        .hoja { background: var(--papel); border: 1px solid var(--borde); border-radius: 16px; padding: 8px 32px 32px; margin-bottom: 40px; }
+        .intro { font-size: 1.08rem; color: var(--suave); margin: 24px 0; }
+        .resumen { background: var(--marca-fondo); border-left: 4px solid var(--marca); border-radius: 10px; padding: 16px 20px; margin: 24px 0; }
+        .resumen .titulo { margin: 0 0 6px; font-weight: 700; }
+        .resumen ul { margin: 0; }
+        .indice { border: 1px solid var(--borde); border-radius: 10px; padding: 16px 20px; margin: 24px 0 8px; }
+        .indice .titulo { margin: 0 0 6px; font-weight: 700; font-size: .95rem; }
+        .indice ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+        .indice li { margin: 3px 0; break-inside: avoid; }
+        .indice a { text-decoration: none; }
+        .indice a:hover { text-decoration: underline; }
+
+        section { border-top: 1px solid var(--borde); padding-top: 8px; margin-top: 32px; }
+        h2 { font-size: 1.2rem; line-height: 1.3; margin: 20px 0 10px; letter-spacing: -.01em; }
+        p, li { color: var(--suave); }
+        strong { color: var(--texto); }
+        ul, ol { padding-left: 22px; margin: 8px 0; }
+        li { margin: 8px 0; }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 12px 0; border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; font-size: .97rem; }
+        th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--borde); }
+        th { background: var(--fondo); color: var(--tenue); font-size: .82rem; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; }
+        tr:last-child td { border-bottom: 0; }
+        td:first-child { color: var(--suave); }
+        td:last-child { color: var(--texto); white-space: nowrap; }
+
+        .pie { padding: 0 0 48px; color: var(--tenue); font-size: .92rem; }
+        .pie p { color: var(--tenue); margin: 6px 0; }
+        .pie .firma { margin-top: 14px; }
+
+        @media (max-width: 600px) {
+            .hoja { padding: 4px 18px 24px; border-radius: 12px; }
+            .indice ol { columns: 1; }
+            .portada { padding-top: 28px; }
+            td:last-child { white-space: normal; }
+        }
+        @media print {
+            .menu, .indice { display: none; }
+            body, .hoja, .cabecera { background: #fff; color: #000; border: 0; }
+            a { color: inherit; }
+        }
+
+        :root { --peligro: #c8323a; --peligro-hover: #ad262e; --error-texto: #9e1f26; --error-fondo: #fdeeee; --listo-texto: #0b5e3a; --listo-fondo: #e9f6ef; }
+        @media (prefers-color-scheme: dark) {
+            :root { --peligro: #e5484d; --peligro-hover: #f0646a; --error-texto: #ffb4b6; --error-fondo: #3a1719; --listo-texto: #9ff0c4; --listo-fondo: #10301f; }
+        }
+        .columnas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; margin-bottom: 40px; }
+        .columnas .hoja { margin-bottom: 0; padding-top: 4px; }
+        .columnas h2 { margin-top: 20px; }
+        .advertencia { border-top: 1px solid var(--borde); padding-top: 14px; margin-top: 16px; }
+        .ayuda { margin: 0 0 4px; color: var(--tenue); font-size: .95rem; }
+        label { display: block; font-size: .88rem; font-weight: 600; color: var(--suave); margin: 16px 0 6px; }
+        input[type=email], input[type=password] {
+            width: 100%; padding: 12px 14px; border-radius: 10px;
+            border: 1px solid var(--borde); background: var(--fondo); color: var(--texto); font: inherit;
+        }
+        input[type=email]:focus, input[type=password]:focus { border-color: var(--marca); outline: none; box-shadow: 0 0 0 3px var(--marca-fondo); }
+        input:focus-visible, button:focus-visible { outline: 2px solid var(--marca); outline-offset: 2px; }
+        .acepto { display: flex; gap: 10px; align-items: flex-start; margin-top: 18px; font-weight: 400; color: var(--suave); font-size: .95rem; }
+        .acepto input { margin-top: 5px; width: 18px; height: 18px; flex: none; accent-color: var(--peligro); }
+        button {
+            width: 100%; margin-top: 20px; padding: 13px; border: 0; border-radius: 10px;
+            background: var(--peligro); color: #fff; font: inherit; font-weight: 600; cursor: pointer;
+        }
+        button:hover:not(:disabled) { background: var(--peligro-hover); }
+        button:disabled { opacity: .55; cursor: default; }
+        .aviso { margin: 16px 0 0; padding: 12px 14px; border-radius: 10px; font-size: .95rem; }
+        .aviso.error { background: var(--error-fondo); color: var(--error-texto); }
+        .aviso.listo { background: var(--listo-fondo); color: var(--listo-texto); }
+        .oculto { display: none; }
+        @media (max-width: 760px) { .columnas { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<header class="cabecera">
+    <div class="contenido">
+        <a class="logo" href="/privacidad"><span class="logo-marca" aria-hidden="true"></span>Trazia</a>
+        <nav class="menu" aria-label="Páginas legales">
+            <a href="/privacidad">Privacidad</a>
+            <a href="/terminos">Términos de uso</a>
+            <a href="/eliminar-cuenta" aria-current="page">Eliminar cuenta</a>
+        </nav>
+    </div>
+</header>
+
+<main class="contenido">
+    <div class="portada">
+        <p class="etiqueta">Tu cuenta</p>
+        <h1>Eliminar tu cuenta de Trazia</h1>
+        <p class="fecha">Desde aquí puedes borrar tu cuenta y todos los datos asociados, sin necesidad de tener la aplicación instalada.</p>
+    </div>
+
+    <div class="columnas">
+        <article class="hoja">
+            <h2>Qué se borra</h2>
+            <ul>
+                <li>Tu correo, nombre, teléfono y contraseña.</li>
+                <li>Tu historial de viajes.</li>
+                <li>Tus reportes, respuestas, reacciones y mensajes en los canales.</li>
+                <li>Tus reseñas de comercios y tus sugerencias.</li>
+                <li>Tus alertas del botón de pánico.</li>
+                <li>Tus denuncias y la lista de personas que bloqueaste.</li>
+            </ul>
+            <p class="advertencia"><strong>El borrado es inmediato y no se puede deshacer.</strong> Solo se conservan registros anónimos de búsquedas, que nunca estuvieron asociados a tu cuenta. Puedes leer más en la <a href="/privacidad#derechos">política de privacidad</a>.</p>
+        </article>
+
+        <section class="hoja tarjeta" id="tarjeta" aria-labelledby="titulo-formulario">
+            <h2 id="titulo-formulario">Confirma que eres tú</h2>
+            <p class="ayuda">Inicia sesión con los datos de tu cuenta para eliminarla.</p>
+            <form id="formulario" novalidate>
+                <label for="correo">Correo de tu cuenta</label>
+                <input id="correo" name="correo" type="email" autocomplete="username" required maxlength="254">
+
+                <label for="clave">Contraseña</label>
+                <input id="clave" name="clave" type="password" autocomplete="current-password" required maxlength="200">
+
+                <label class="acepto">
+                    <input id="acepto" type="checkbox" required>
+                    <span>Entiendo que mi cuenta y mis datos se borran ahora y no se pueden recuperar.</span>
+                </label>
+
+                <button id="boton" type="submit">Eliminar mi cuenta</button>
+                <p id="aviso" class="aviso oculto" role="alert"></p>
+            </form>
+            <noscript>
+                <p class="aviso error">Esta página necesita JavaScript. También puedes borrar tu cuenta desde la aplicación: Perfil → Eliminar cuenta.</p>
+            </noscript>
+        </section>
+    </div>
+</main>
+
+<footer class="pie">
+    <div class="contenido">
+        <p>También puedes hacerlo desde la aplicación: Perfil → Eliminar cuenta.</p>
+        {{CONTACTO}}
+        <p class="firma">Trazia · El Salvador</p>
+    </div>
+</footer>
+<script nonce="{{NONCE}}">
+    (function () {
+        'use strict';
+        var formulario = document.getElementById('formulario');
+        var boton = document.getElementById('boton');
+        var aviso = document.getElementById('aviso');
+
+        function mostrar(texto, clase) {
+            aviso.textContent = texto;
+            aviso.className = 'aviso ' + clase;
+        }
+
+        // Lo que diga el servidor se muestra como texto, nunca como HTML.
+        function pedir(ruta, cuerpo, token) {
+            var cabeceras = { 'Content-Type': 'application/json' };
+            if (token) cabeceras['Authorization'] = 'Bearer ' + token;
+            return fetch(ruta, {
+                method: 'POST', headers: cabeceras, body: JSON.stringify(cuerpo),
+                credentials: 'omit', cache: 'no-store'
+            }).then(function (respuesta) {
+                return respuesta.text().then(function (texto) {
+                    var datos = null;
+                    try { datos = texto ? JSON.parse(texto) : null; } catch (e) { datos = null; }
+                    return { estado: respuesta.status, datos: datos };
+                });
+            });
+        }
+
+        function mensajeDe(respuesta, porDefecto) {
+            var m = respuesta.datos && typeof respuesta.datos.mensaje === 'string' ? respuesta.datos.mensaje : '';
+            return m || porDefecto;
+        }
+
+        formulario.addEventListener('submit', function (evento) {
+            evento.preventDefault();
+            var correo = document.getElementById('correo').value.trim();
+            var clave = document.getElementById('clave').value;
+            if (!correo || !clave) { mostrar('Escribe tu correo y tu contraseña.', 'error'); return; }
+            if (!document.getElementById('acepto').checked) {
+                mostrar('Marca la casilla para confirmar que entiendes que no se puede deshacer.', 'error');
+                return;
+            }
+
+            boton.disabled = true;
+            boton.textContent = 'Eliminando…';
+            aviso.className = 'aviso oculto';
+
+            var token = null;
+            pedir('/api/v1/auth/login', { email: correo, clave: clave }).then(function (entrada) {
+                if (entrada.estado !== 200 || !entrada.datos || !entrada.datos.token) {
+                    throw new Error(mensajeDe(entrada, 'No pudimos iniciar sesión. Revisa el correo y la contraseña.'));
+                }
+                token = entrada.datos.token;
+                return pedir('/api/v1/auth/yo/eliminar', { clave: clave }, token);
+            }).then(function (borrado) {
+                if (borrado.estado !== 204) {
+                    throw new Error(mensajeDe(borrado, 'No se pudo eliminar la cuenta. Inténtalo de nuevo en unos minutos.'));
+                }
+                formulario.reset();
+                formulario.className = 'oculto';
+                var listo = document.createElement('p');
+                listo.className = 'aviso listo';
+                listo.setAttribute('role', 'status');
+                listo.textContent = 'Tu cuenta y tus datos fueron eliminados. Ya puedes cerrar esta página.';
+                document.getElementById('tarjeta').appendChild(listo);
+            }).catch(function (error) {
+                // Si entró pero no se pudo borrar, la sesión que abrió esta página no queda viva.
+                if (token) pedir('/api/v1/auth/logout', {}, token).catch(function () {});
+                var texto = error && error.message && error.name !== 'TypeError'
+                    ? error.message
+                    : 'No hay conexión con Trazia. Inténtalo de nuevo en unos minutos.';
+                mostrar(texto, 'error');
+                boton.disabled = false;
+                boton.textContent = 'Eliminar mi cuenta';
+            });
+        });
+    })();
+</script>
+</body>
+</html>

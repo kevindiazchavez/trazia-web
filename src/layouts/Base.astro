@@ -1,12 +1,14 @@
 ---
 import "../styles/global.css";
 import Iconos from "../components/Iconos.astro";
+import { SITIO } from "../config";
 
 interface Props {
     titulo: string;
     descripcion: string;
 }
 const { titulo, descripcion } = Astro.props;
+const canonica = new URL(Astro.url.pathname, SITIO).href;
 ---
 <!doctype html>
 <html lang="es">
@@ -15,8 +17,18 @@ const { titulo, descripcion } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="description" content={descripcion}>
     <meta name="theme-color" content="#ffffff">
-    <link rel="icon" type="image/png" href="/marca/trazia-logo.png">
+    <link rel="canonical" href={canonica}>
+    <link rel="icon" type="image/png" href="/marca/trazia-logo-128.png">
+    <link rel="apple-touch-icon" href="/marca/trazia-logo-128.png">
     <link rel="preload" href="/marca/plus-jakarta-sans.ttf" as="font" type="font/ttf" crossorigin>
+    <!-- Cómo se ve el enlace al compartirlo (WhatsApp, Facebook, X). -->
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_SV">
+    <meta property="og:site_name" content="Trazia">
+    <meta property="og:url" content={canonica}>
+    <meta property="og:title" content={titulo}>
+    <meta property="og:description" content={descripcion}>
+    <meta property="og:image" content={new URL("/marca/trazia-logo.png", SITIO).href}>
     <title>{titulo}</title>
     <script is:inline>
         // Marca que hay JavaScript, para que la portada espere a sus animaciones.

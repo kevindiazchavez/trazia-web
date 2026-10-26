@@ -3,11 +3,11 @@
 ---
 <header class="barra" data-barra>
     <div class="contenido">
-        <a class="marca" href="#inicio"><img src="/marca/trazia-logo.png" alt="" width="36" height="36">Trazia</a>
+        <a class="marca" href="#inicio"><img src="/marca/trazia-logo-128.png" alt="" width="36" height="36">Trazia</a>
         <nav class="menu" aria-label="Secciones">
             <a href="#que-hace">Qué hace</a>
             <a href="#como-funciona">Cómo funciona</a>
-            <a href="#seguridad">Viaja seguro</a>
+            <a href="#emergencia">Botón 911</a>
         </nav>
         <a class="boton boton-chico" href="#descargar">Descargar</a>
     </div>
@@ -28,10 +28,10 @@
         opacity: 0; transition: opacity .3s ease;
     }
     :global(.barra.con-fondo) .contenido::before { opacity: 1; }
-    .marca { display: inline-flex; align-items: center; gap: 10px; color: var(--texto); text-decoration: none; font-weight: 800; font-size: 1.2rem; letter-spacing: -.02em; }
+    .marca { display: inline-flex; align-items: center; min-height: 48px; gap: 10px; color: var(--texto); text-decoration: none; font-weight: 800; font-size: 1.2rem; letter-spacing: -.02em; }
     .marca img { width: 36px; height: 36px; border-radius: 50%; box-shadow: 0 0 0 1px var(--borde), 0 0 24px -6px var(--brillo); }
     .menu { display: flex; gap: 32px; font-size: .92rem; font-weight: 600; }
-    .menu a { color: var(--texto); text-decoration: none; transition: opacity .2s; }
+    .menu a { display: inline-flex; align-items: center; min-height: 48px; color: var(--texto); text-decoration: none; transition: opacity .2s; }
     .menu a:hover { opacity: .7; }
     @media (max-width: 760px) {
         .barra { top: max(6px, env(safe-area-inset-top)); }

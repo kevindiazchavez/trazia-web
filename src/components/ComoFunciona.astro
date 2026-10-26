@@ -3,17 +3,17 @@ import Telefono from "./Telefono.astro";
 import BotonPlay from "./BotonPlay.astro";
 
 const pasos = [
-    { titulo: "Escribe a dónde vas", texto: "Busca el lugar por su nombre o márcalo en el mapa. Trazia sale desde donde estás." },
-    { titulo: "Elige tu viaje", texto: "Compara las opciones por tiempo, caminata y pasaje, y mira dónde subir y dónde bajar." },
-    { titulo: "Sigue el recorrido", texto: "Ve en el mapa tu ruta, dónde hacer transbordo y por dónde caminar hasta llegar." },
-    { titulo: "Avisa y suma puntos", texto: "Si ves algo en la ruta, repórtalo: ayudas a los demás y ganas puntos." },
+    { titulo: "Escribí a dónde vas", texto: "Buscás el lugar por su nombre y Trazia arma el viaje desde donde estás." },
+    { titulo: "Elegí tu viaje", texto: "Comparás las opciones por tiempo, caminata y costo total, y te quedás con la que más te sirve." },
+    { titulo: "Mirá cada tramo", texto: "Dónde subirte, dónde bajarte y, si hay transbordo, el punto exacto donde cambiar de bus." },
+    { titulo: "Seguí el recorrido", texto: "El viaje se dibuja en el mapa con las paradas marcadas, para que sepás cuándo te toca bajar." },
 ];
 ---
 <section class="seccion" id="como-funciona">
     <div class="contenido">
         <div class="encabezado">
             <h2 data-revela>De tu casa a donde vas, <em>en cuatro pasos.</em></h2>
-            <p data-revela>Sin preguntarle a nadie ni adivinar en la parada: Trazia te lleva de la mano desde que escribes tu destino hasta que te bajas del bus.</p>
+            <p data-revela>Sin preguntarle a nadie ni adivinar en la parada: desde que escribís tu destino hasta que te bajás del bus.</p>
         </div>
 
         <div class="recorrido">
@@ -31,7 +31,7 @@ const pasos = [
 
             <!-- En escritorio el teléfono se queda fijo mientras pasan los pasos, y muestra la pantalla de cada uno. -->
             <aside class="lateral" data-revela data-pasos-telefono>
-                <Telefono escala={0.9} pantallas={["inicio", "opciones", "itinerario", "avisos"]} />
+                <Telefono escala={0.9} pantallas={["inicio", "opciones", "itinerario", "recorrido"]} />
                 <div class="lateral-texto">
                     <p>Cada paso, tal como lo vas a ver en la app.</p>
                     <BotonPlay chico />

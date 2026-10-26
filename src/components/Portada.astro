@@ -3,14 +3,23 @@ import Telefono from "./Telefono.astro";
 import BotonPlay from "./BotonPlay.astro";
 
 /*
- * LAS RUTAS DEL FONDO, sobre 1200 × 1150. Son curvas en U que entran por un
- * costado (por debajo de la barra), pasan por debajo del texto y detrás del
- * teléfono, y salen por el otro. Los buses las recorren (animations.ts, data-bus).
+ * EL FONDO: un mapa de ciudad visto desde arriba, sobre 1200 × 1150. Manzanas
+ * tenues, tres autopistas en U que entran por un costado, pasan por debajo
+ * del texto y detrás del teléfono y salen por el otro, y sobre cada una su
+ * ruta de color con sus paradas. Los buses las recorren girando con la vía
+ * (animations.ts, data-bus). El centro, donde va el título, queda despejado
+ * con una máscara.
  */
 const rutas = [
-    { d: "M-40 160 C120 170 220 600 600 640 C980 600 1080 170 1240 160", color: "var(--neon)" },
-    { d: "M-40 340 C200 360 300 760 600 780 C900 760 1000 360 1240 340", color: "var(--desvio)" },
-    { d: "M-40 620 C200 640 350 960 600 960 C850 960 1000 640 1240 620", color: "var(--averia)" },
+    { d: "M-40 160 C120 170 220 600 600 640 C980 600 1080 170 1240 160", color: "var(--neon)", linea: "#0fbf63" },
+    { d: "M-40 340 C200 360 300 760 600 780 C900 760 1000 360 1240 340", color: "var(--desvio)", linea: "#3b82f6" },
+    { d: "M-40 500 C200 520 330 840 600 850 C870 840 1000 520 1240 500", color: "var(--averia)", linea: "#e8890b" },
+];
+// Las paradas: el punto medio de cada curva, y su espejo del otro lado.
+const paradas = [
+    [197, 389, 0], [1003, 389, 0],
+    [258, 560, 1], [942, 560, 1],
+    [266, 689, 2], [934, 689, 2],
 ];
 
 /* Los buses: en qué ruta van, desde qué punto de ella arrancan (0 a 1),
@@ -21,14 +30,42 @@ const buses = [
     { ruta: 0, desde: 0.75, duracion: 22, vuelta: true, x: 1002, y: 389 },
     { ruta: 1, desde: 0.35, duracion: 20, x: 257, y: 560 },
     { ruta: 1, desde: 0.85, duracion: 20, vuelta: true, x: 943, y: 560 },
-    { ruta: 2, desde: 0.55, duracion: 24, x: 300, y: 770 },
-    { ruta: 2, desde: 0.1, duracion: 24, vuelta: true, x: 900, y: 770 },
+    { ruta: 2, desde: 0.55, duracion: 24, x: 290, y: 700 },
+    { ruta: 2, desde: 0.1, duracion: 24, vuelta: true, x: 910, y: 700 },
 ];
 ---
 <section class="portada" id="inicio">
     <div class="lineas" aria-hidden="true" data-hero>
         <svg viewBox="0 0 1200 1150" preserveAspectRatio="xMidYMin slice">
-            {rutas.map((r) => <path class="ruta" style={`--color: ${r.color}`} d={r.d} pathLength="1" data-linea />)}
+            <defs>
+                <pattern id="manzanas" width="96" height="72" patternUnits="userSpaceOnUse" patternTransform="rotate(-8)">
+                    <rect x="6" y="6" width="84" height="60" rx="9" class="manzana" />
+                    <rect x="6" y="6" width="38" height="60" rx="9" class="manzana clara" />
+                </pattern>
+                <!-- El volumen del bus: los costados en sombra y el techo con luz. Va encima del color de cada bus. -->
+                <linearGradient id="bus-volumen" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#000" stop-opacity=".38" />
+                    <stop offset=".2" stop-color="#000" stop-opacity=".08" />
+                    <stop offset=".5" stop-color="#fff" stop-opacity=".22" />
+                    <stop offset=".8" stop-color="#000" stop-opacity=".08" />
+                    <stop offset="1" stop-color="#000" stop-opacity=".42" />
+                </linearGradient>
+                <linearGradient id="bus-vidrio" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#1e293b" />
+                    <stop offset=".45" stop-color="#334155" />
+                    <stop offset=".55" stop-color="#64748b" />
+                    <stop offset="1" stop-color="#0f172a" />
+                </linearGradient>
+            </defs>
+            <rect x="-100" y="-100" width="1400" height="1350" fill="url(#manzanas)" />
+            <!-- Las autopistas de dos sentidos: borde, asfalto y las orillas punteadas. -->
+            {rutas.map((r) => <path class="via-borde" d={r.d} />)}
+            {rutas.map((r) => <path class="via" d={r.d} />)}
+            {rutas.map((r) => <path class="carril" d={r.d} />)}
+            {rutas.map((r) => <path class="carril-tapa" d={r.d} />)}
+            <!-- La ruta de cada bus, encima de su autopista. -->
+            {rutas.map((r) => <path class="ruta" style={`--linea: ${r.linea}`} d={r.d} pathLength="1" data-linea />)}
+            {paradas.map(([x, y, i]) => <circle class="parada" style={`--linea: ${rutas[i].linea}`} cx={x} cy={y} r="6" />)}
             {buses.map((b) => (
                 <g
                     class="bus"
@@ -40,21 +77,41 @@ const buses = [
                     data-duracion={b.duracion}
                     data-vuelta={b.vuelta ? "" : undefined}
                 >
-                    <circle class="halo" r="30" />
-                    <circle class="cuerpo" r="20" />
-                    <use href="#i-bus" x="-12" y="-12" width="24" height="24" />
+                    <!-- El bus en 3D visto desde arriba, mirando hacia la derecha (+x). GSAP lo gira hacia donde
+                         avanza (también al que va de vuelta), y va por el carril de su derecha. -->
+                    <!-- Marco invisible y simétrico: GSAP centra el bus con su contorno, y sin esto
+                         el corrimiento al carril se anularía. -->
+                    <rect x="-30" y="-24" width="60" height="48" fill="none" />
+                    <g transform="translate(0 13) scale(.74)">
+                        <rect class="sombra" x="-33" y="-9" width="70" height="26" rx="8" />
+                        <path class="rueda" d="M-24 -14.5h10v3h-10z M14 -14.5h10v3h-10z M-24 11.5h10v3h-10z M14 11.5h10v3h-10z" />
+                        <path class="espejo" d="M27 -12.5l3 -4h2.5l-2 4z M27 12.5l3 4h2.5l-2 -4z" />
+                        <rect class="carroceria" x="-35" y="-12.5" width="70" height="25" rx="7" />
+                        <rect x="-35" y="-12.5" width="70" height="25" rx="7" fill="url(#bus-volumen)" />
+                        <path class="ventanas" d="M-27 -11h8.5v3.4h-8.5z M-16.5 -11h8.5v3.4h-8.5z M-6 -11h8.5v3.4h-8.5z M4.5 -11h8.5v3.4h-8.5z M15 -11h7v3.4h-7z M-27 7.6h8.5v3.4h-8.5z M-16.5 7.6h8.5v3.4h-8.5z M-6 7.6h8.5v3.4h-8.5z M4.5 7.6h8.5v3.4h-8.5z M15 7.6h7v3.4h-7z" />
+                        <rect class="techo" x="-28" y="-6" width="51" height="12" rx="3.5" />
+                        <rect class="aire" x="-21" y="-4" width="13" height="8" rx="1.8" />
+                        <path class="rejilla" d="M-19 -2h9 M-19 0h9 M-19 2h9" />
+                        <rect class="aire" x="-3" y="-4" width="13" height="8" rx="1.8" />
+                        <path class="rejilla" d="M-1 -2h9 M-1 0h9 M-1 2h9" />
+                        <path d="M25.5 -11h4.5a5 5 0 0 1 5 5v12a5 5 0 0 1-5 5h-4.5z" fill="url(#bus-vidrio)" />
+                        <path class="reflejo" d="M28 -8.5l3.5 5" />
+                        <path class="faro" d="M34.2 -10.5h1.3v3h-1.3z M34.2 7.5h1.3v3h-1.3z" />
+                        <path class="luz-trasera" d="M-35.5 -10.5h1.3v3.5h-1.3z M-35.5 7h1.3v3.5h-1.3z" />
+                        <rect class="borde" x="-35" y="-12.5" width="70" height="25" rx="7" />
+                    </g>
                 </g>
             ))}
         </svg>
     </div>
 
     <div class="contenido">
-        <p class="insignia" data-hero data-hero-pieza>Transporte público · El Salvador</p>
-        <h1 data-hero data-hero-titulo>Sabe qué bus tomar, <em>sin preguntarle a nadie.</em></h1>
-        <p class="bajada" data-hero data-hero-pieza>Trazia te dice qué ruta te lleva, dónde subir, dónde bajar y cuánto caminar. Y la comunidad avisa en vivo lo que pasa en cada ruta.</p>
+        <p class="insignia" data-hero data-hero-pieza>874 rutas de bus · El Salvador</p>
+        <h1 data-hero data-hero-titulo>Sabé qué bus tomar, <em>sin preguntarle a nadie.</em></h1>
+        <p class="bajada" data-hero data-hero-pieza>Escribís a dónde vas y Trazia arma el viaje completo: qué buses tomar, dónde subirte, dónde bajarte, cuánto vas a tardar y cuánto vas a pagar.</p>
         <div class="acciones" data-hero data-hero-pieza>
             <BotonPlay />
-            <span class="nota"><svg class="ic" aria-hidden="true"><use href="#i-check" /></svg>Gratis, para Android</span>
+            <span class="nota"><svg class="ic" aria-hidden="true"><use href="#i-check" /></svg>Para Android · iPhone más adelante</span>
         </div>
     </div>
 
@@ -65,12 +122,36 @@ const buses = [
 
 <style>
     .portada { position: relative; padding-top: 150px; text-align: center; }
-    .lineas { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+    /* El mapa: el centro, detrás del título, se desvanece para que el texto se lea limpio. */
+    .lineas {
+        position: absolute; inset: 0; z-index: -1; pointer-events: none;
+        -webkit-mask-image: radial-gradient(ellipse 36% 26% at 50% 27%, transparent 30%, #000 100%);
+        mask-image: radial-gradient(ellipse 36% 26% at 50% 27%, transparent 30%, #000 100%);
+    }
     .lineas > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .ruta { fill: none; stroke: var(--color); stroke-width: 2; stroke-linecap: round; opacity: .32; }
-    .bus .halo { fill: var(--color); opacity: .18; }
-    .bus .cuerpo { fill: var(--color); stroke: #fff; stroke-width: 3; }
-    .bus use { fill: var(--oscuro); }
+    .manzana { fill: #f5f6f8; }
+    .manzana.clara { fill: #f9fafb; }
+    .via-borde, .via, .carril, .ruta { fill: none; stroke-linecap: round; }
+    .via-borde { stroke: #e2e6ea; stroke-width: 54; }
+    .via { stroke: #eef1f4; stroke-width: 50; }
+    /* Las orillas de la autopista, punteadas; al centro, la línea de la ruta divide los dos sentidos. */
+    .carril { stroke: #fff; stroke-width: 40; stroke-dasharray: 14 16; opacity: .9; }
+    .carril-tapa { fill: none; stroke: #eef1f4; stroke-width: 37; }
+    .ruta { stroke: var(--linea); stroke-width: 3.5; opacity: .75; }
+    .parada { fill: #fff; stroke: var(--linea); stroke-width: 3; }
+    /* El bus: color de su ruta, con volumen, vidrios oscuros, faros y sombra suave en el piso. */
+    .bus .sombra { fill: rgba(17, 24, 39, .16); }
+    .bus .rueda { fill: #1f2937; }
+    .bus .espejo { fill: #374151; }
+    .bus .carroceria { fill: var(--color); }
+    .bus .ventanas { fill: #1e293b; opacity: .82; }
+    .bus .techo { fill: var(--color); stroke: rgba(255, 255, 255, .55); stroke-width: 1; }
+    .bus .aire { fill: #eef1f4; stroke: rgba(15, 23, 42, .25); stroke-width: .8; }
+    .bus .rejilla { stroke: rgba(15, 23, 42, .28); stroke-width: .8; }
+    .bus .reflejo { stroke: rgba(255, 255, 255, .45); stroke-width: 1.4; stroke-linecap: round; }
+    .bus .faro { fill: #fde68a; }
+    .bus .luz-trasera { fill: #ef4444; }
+    .bus .borde { fill: none; stroke: #fff; stroke-width: 1.6; }
 
     .insignia {
         display: inline-flex; margin: 0 0 24px; padding: 7px 16px; border-radius: 999px;

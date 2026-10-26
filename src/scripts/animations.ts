@@ -7,8 +7,9 @@
  *     data-vuelta)
  *   data-revela, data-revela-grupo="0.15"                             aparecer al entrar en vista (un grupo escalona a sus hijos)
  *   data-paso, data-pasos-telefono                                    los pasos de "Cómo funciona" y el teléfono que cambia con ellos
+ *   data-contador                                                     las cifras de la encuesta, que cuentan desde 0
  *   data-telefono (data-tel-ruta, data-tel-bus, data-vista)           la ruta y el bus dentro de cada teléfono, y sus pantallas
- *   data-pulso                                                        las ondas que laten en la alerta del botón de pánico
+ *   data-pulso                                                        las ondas que laten en la llamada del botón de emergencia
  *   data-paralaje, data-mancha, data-barra                            paralaje, degradados del fondo y la barra
  *
  * Reglas: solo se anima transform y opacity (más el trazo de las rutas SVG).
@@ -109,9 +110,11 @@ function entradaPortada() {
 function recorrido(bus: SVGGElement): gsap.TweenVars {
     const ruta = todos<SVGPathElement>("[data-linea]")[Number(bus.dataset.ruta)];
     const desde = Number(bus.dataset.desde) || 0;
-    const hasta = bus.dataset.vuelta === undefined ? desde + 1 : desde - 1;
+    const vuelta = bus.dataset.vuelta !== undefined;
+    const hasta = vuelta ? desde - 1 : desde + 1;
     return {
-        motionPath: { path: ruta, align: ruta, alignOrigin: [0.5, 0.5], start: desde, end: hasta },
+        // El bus gira con la curva y mira hacia donde avanza, también el que va de vuelta.
+        motionPath: { path: ruta, align: ruta, alignOrigin: [0.5, 0.5], start: desde, end: hasta, autoRotate: true },
         duration: Number(bus.dataset.duracion) || 20,
         ease: "none",
     };
@@ -139,6 +142,24 @@ function revelar(y: number) {
             ...hasta,
             x: 0,
             scrollTrigger: { trigger: paso, start: "top 80%", once: true },
+        });
+    });
+}
+
+/* Las cifras cuentan de 0 a su valor al entrar en vista. */
+function contadores() {
+    todos("[data-contador]").forEach((el) => {
+        const fin = Number(el.dataset.contador);
+        const cuenta = { v: 0 };
+        el.textContent = "0";
+        gsap.to(cuenta, {
+            v: fin,
+            duration: 1.6,
+            ease: "power2.out",
+            scrollTrigger: { trigger: el, start: "top 85%", once: true },
+            onUpdate: () => {
+                el.textContent = String(Math.round(cuenta.v));
+            },
         });
     });
 }
@@ -237,6 +258,7 @@ medios.add(CON_MOVIMIENTO, () => {
     const pararScroll = scrollSuave();
     entradaPortada();
     revelar(40);
+    contadores();
     return pararScroll;
 });
 

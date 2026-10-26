@@ -1,18 +1,24 @@
 ---
-import { legales } from "../config";
+import { legales, CORREO } from "../config";
+
+/* Desde las páginas legales, los enlaces a las secciones vuelven a la portada. */
+interface Props {
+    base?: string;
+}
+const { base = "" } = Astro.props;
 ---
 <footer class="pie">
     <div class="contenido">
         <div class="fila">
-            <a class="marca" href="#inicio"><img src="/marca/trazia-logo.png" alt="" width="34" height="34">Trazia</a>
+            <a class="marca" href={`${base}#inicio`}><img src="/marca/trazia-logo-128.png" alt="" width="34" height="34">Trazia</a>
             <nav aria-label="Secciones">
-                <a href="#que-hace">Qué hace</a>
-                <a href="#como-funciona">Cómo funciona</a>
-                <a href="#seguridad">Viaja seguro</a>
-                <a href="#descargar">Descargar</a>
+                <a href={`${base}#que-hace`}>Qué hace</a>
+                <a href={`${base}#como-funciona`}>Cómo funciona</a>
+                <a href={`${base}#emergencia`}>Botón 911</a>
+                <a href={`${base}#descargar`}>Descargar</a>
             </nav>
         </div>
-        <!-- Cuando haya correo de contacto: <p>¿Preguntas, una ruta que falta o trabajas en transporte? Escríbenos a <a href="mailto:CORREO">CORREO</a>.</p> -->
+        <p class="contacto">¿Dudas, una ruta que falta o trabajás en transporte? Escribinos a <a href={`mailto:${CORREO}`}>{CORREO}</a>.</p>
         <div class="fila legal">
             <p>© {new Date().getFullYear()} Trazia · Hecho en El Salvador.</p>
             <ul>
@@ -27,12 +33,15 @@ import { legales } from "../config";
 <style>
     .pie { padding: 20px 0 max(40px, env(safe-area-inset-bottom)); font-size: .92rem; }
     .fila { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 40px; padding: 24px 0; }
-    .marca { display: inline-flex; align-items: center; gap: 10px; color: var(--texto); text-decoration: none; font-weight: 800; font-size: 1.25rem; letter-spacing: -.02em; }
-    .marca img { width: 34px; height: 34px; border-radius: 10px; }
-    nav { display: flex; flex-wrap: wrap; gap: 8px 32px; }
+    .marca { display: inline-flex; align-items: center; min-height: 48px; gap: 10px; color: var(--texto); text-decoration: none; font-weight: 800; font-size: 1.25rem; letter-spacing: -.02em; }
+    .marca img { width: 34px; height: 34px; border-radius: 50%; }
+    nav { display: flex; flex-wrap: wrap; gap: 0 28px; }
+    nav a, ul a { display: inline-flex; align-items: center; min-height: 48px; }
     a { color: var(--suave); text-decoration: none; transition: opacity .2s; }
     nav a:hover, ul a:hover { opacity: .7; }
+    .contacto { margin: 0 0 8px; color: var(--suave); }
+    .contacto a { color: var(--verde-oscuro); text-decoration: underline; }
     .legal { border-top: 1px solid var(--borde); color: var(--tenue); }
     .legal p { margin: 0; }
-    ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+    ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 24px; }
 </style>

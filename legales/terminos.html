@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Las reglas para usar Trazia y su comunidad.">
+    <title>Términos de uso de Trazia</title>
+    <style nonce="{{NONCE}}">
+        :root {
+            color-scheme: light dark;
+            --fondo: #f4f7f5; --papel: #ffffff; --texto: #14201a; --suave: #3d4d45; --tenue: #66766e;
+            --borde: #dde5e1; --marca: #0a8a54; --marca-texto: #08704a; --marca-fondo: #e9f6ef;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --fondo: #0e1316; --papel: #151c21; --texto: #e8eef0; --suave: #c4ced3; --tenue: #93a4ad;
+                --borde: #26313a; --marca: #19e68c; --marca-texto: #52e9a7; --marca-fondo: #10271c;
+            }
+        }
+        * { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; scroll-padding-top: 16px; }
+        body {
+            margin: 0; background: var(--fondo); color: var(--texto);
+            font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        a { color: var(--marca-texto); text-underline-offset: 2px; }
+        a:focus-visible { outline: 2px solid var(--marca); outline-offset: 2px; border-radius: 2px; }
+        .contenido { max-width: 780px; margin: 0 auto; padding: 0 16px; }
+
+        .cabecera { background: var(--papel); border-bottom: 1px solid var(--borde); }
+        .cabecera .contenido {
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+            gap: 8px 24px; padding-top: 14px; padding-bottom: 14px;
+        }
+        .logo { display: inline-flex; align-items: center; gap: 10px; color: var(--texto); text-decoration: none; font-weight: 700; font-size: 1.15rem; letter-spacing: -.01em; }
+        .logo-marca { width: 28px; height: 28px; border-radius: 8px; background: var(--marca); display: inline-grid; place-items: center; }
+        .logo-marca::after { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 3px solid var(--papel); }
+        .menu { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: .95rem; }
+        .menu a { color: var(--suave); text-decoration: none; padding: 4px 0; border-bottom: 2px solid transparent; }
+        .menu a:hover { color: var(--texto); }
+        .menu a[aria-current="page"] { color: var(--texto); font-weight: 600; border-bottom-color: var(--marca); }
+
+        .portada { padding: 40px 0 24px; }
+        .etiqueta { margin: 0 0 8px; color: var(--marca-texto); font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+        h1 { margin: 0 0 12px; font-size: clamp(1.8rem, 6vw, 2.5rem); line-height: 1.15; letter-spacing: -.02em; }
+        .fecha { margin: 0; color: var(--tenue); font-size: .92rem; }
+
+        .hoja { background: var(--papel); border: 1px solid var(--borde); border-radius: 16px; padding: 8px 32px 32px; margin-bottom: 40px; }
+        .intro { font-size: 1.08rem; color: var(--suave); margin: 24px 0; }
+        .resumen { background: var(--marca-fondo); border-left: 4px solid var(--marca); border-radius: 10px; padding: 16px 20px; margin: 24px 0; }
+        .resumen .titulo { margin: 0 0 6px; font-weight: 700; }
+        .resumen ul { margin: 0; }
+        .indice { border: 1px solid var(--borde); border-radius: 10px; padding: 16px 20px; margin: 24px 0 8px; }
+        .indice .titulo { margin: 0 0 6px; font-weight: 700; font-size: .95rem; }
+        .indice ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+        .indice li { margin: 3px 0; break-inside: avoid; }
+        .indice a { text-decoration: none; }
+        .indice a:hover { text-decoration: underline; }
+
+        section { border-top: 1px solid var(--borde); padding-top: 8px; margin-top: 32px; }
+        h2 { font-size: 1.2rem; line-height: 1.3; margin: 20px 0 10px; letter-spacing: -.01em; }
+        p, li { color: var(--suave); }
+        strong { color: var(--texto); }
+        ul, ol { padding-left: 22px; margin: 8px 0; }
+        li { margin: 8px 0; }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 12px 0; border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; font-size: .97rem; }
+        th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--borde); }
+        th { background: var(--fondo); color: var(--tenue); font-size: .82rem; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; }
+        tr:last-child td { border-bottom: 0; }
+        td:first-child { color: var(--suave); }
+        td:last-child { color: var(--texto); white-space: nowrap; }
+
+        .pie { padding: 0 0 48px; color: var(--tenue); font-size: .92rem; }
+        .pie p { color: var(--tenue); margin: 6px 0; }
+        .pie .firma { margin-top: 14px; }
+
+        @media (max-width: 600px) {
+            .hoja { padding: 4px 18px 24px; border-radius: 12px; }
+            .indice ol { columns: 1; }
+            .portada { padding-top: 28px; }
+            td:last-child { white-space: normal; }
+        }
+        @media print {
+            .menu, .indice { display: none; }
+            body, .hoja, .cabecera { background: #fff; color: #000; border: 0; }
+            a { color: inherit; }
+        }
+    </style>
+</head>
+<body>
+<header class="cabecera">
+    <div class="contenido">
+        <a class="logo" href="/privacidad"><span class="logo-marca" aria-hidden="true"></span>Trazia</a>
+        <nav class="menu" aria-label="Páginas legales">
+            <a href="/privacidad">Privacidad</a>
+            <a href="/terminos" aria-current="page">Términos de uso</a>
+            <a href="/eliminar-cuenta">Eliminar cuenta</a>
+        </nav>
+    </div>
+</header>
+
+<main class="contenido">
+    <div class="portada">
+        <p class="etiqueta">Documento legal</p>
+        <h1>Términos de uso</h1>
+        <p class="fecha">Vigentes desde el 16 de octubre de 2026 · Última actualización: 19 de octubre de 2026</p>
+    </div>
+
+    <article class="hoja">
+        <p class="intro">Estos términos son las reglas para usar Trazia, la aplicación para moverte en bus por El Salvador. Al crear una cuenta o usar la aplicación, aceptas estos términos y la <a href="/privacidad">política de privacidad</a>. Si no estás de acuerdo con ellos, te pedimos que no uses la aplicación.</p>
+
+        <nav class="indice" aria-label="Contenido">
+            <p class="titulo">Contenido</p>
+            <ol>
+                <li><a href="#quien">Quién puede usarla</a></li>
+                <li><a href="#reglas">Reglas de la comunidad</a></li>
+                <li><a href="#denunciar">Denunciar y bloquear</a></li>
+                <li><a href="#medidas">Qué hacemos cuando se rompen las reglas</a></li>
+                <li><a href="#publicaciones">Lo que publicas</a></li>
+                <li><a href="#informacion">La información de Trazia</a></li>
+                <li><a href="#responsabilidad">Responsabilidad</a></li>
+                <li><a href="#cambios">Cambios y ley aplicable</a></li>
+            </ol>
+        </nav>
+
+        <section id="quien">
+            <h2>1. Quién puede usarla</h2>
+            <p>Debes tener al menos 13 años. Si eres menor de edad, úsala con el permiso de tu madre, padre o responsable. Eres responsable de lo que se haga con tu cuenta, así que no compartas tu contraseña con nadie.</p>
+        </section>
+
+        <section id="reglas">
+            <h2>2. Reglas de la comunidad</h2>
+            <p>En Trazia las personas comparten reportes, respuestas, mensajes en los canales de cada ruta y reseñas de comercios. <strong>No toleramos el contenido abusivo.</strong> Está prohibido publicar:</p>
+            <ul>
+                <li>Insultos, acoso, amenazas o intimidación contra cualquier persona.</li>
+                <li>Discurso de odio o discriminación por origen, color de piel, religión, sexo, género, orientación sexual, discapacidad u otra condición.</li>
+                <li>Contenido sexual, contenido que sexualice a menores o violencia explícita.</li>
+                <li>Datos personales de otras personas, como teléfonos, direcciones o fotos, sin su permiso.</li>
+                <li>Spam, publicidad no autorizada o enlaces engañosos.</li>
+                <li>Información falsa a propósito, como reportes inventados, o hacerte pasar por otra persona o institución.</li>
+                <li>Cualquier contenido que promueva delitos o actividades ilegales.</li>
+            </ul>
+            <p>Tampoco está permitido usar el botón de pánico para enviar alertas falsas, intentar entrar a cuentas ajenas, saturar el servicio ni copiar sus datos de forma automatizada.</p>
+        </section>
+
+        <section id="denunciar">
+            <h2>3. Denunciar y bloquear</h2>
+            <p>Si ves algo que no cumple estas reglas, denúncialo desde la aplicación: la opción está en el menú de cada mensaje, reporte, respuesta o reseña. Revisamos todas las denuncias, y lo que varias personas denuncian se oculta automáticamente hasta que lo revisemos.</p>
+            <p>También puedes bloquear a una persona para dejar de ver lo que publica. Esa persona no se entera, y puedes desbloquearla cuando quieras desde tu perfil.</p>
+        </section>
+
+        <section id="medidas">
+            <h2>4. Qué hacemos cuando se rompen las reglas</h2>
+            <p>Podemos borrar u ocultar, sin aviso previo, cualquier contenido que no cumpla estos términos. Según la gravedad o si se repite, podemos suspender la cuenta (no podrá publicar) o cerrarla. Si crees que nos equivocamos, escríbenos y lo revisaremos.</p>
+        </section>
+
+        <section id="publicaciones">
+            <h2>5. Lo que publicas</h2>
+            <p>Lo que publicas sigue siendo tuyo. Al publicarlo, nos das permiso para mostrarlo dentro de Trazia a las demás personas mientras siga publicado. Puedes borrar tus publicaciones cuando quieras, y todas se borran junto con tu cuenta.</p>
+        </section>
+
+        <section id="informacion">
+            <h2>6. La información de Trazia</h2>
+            <p>Las rutas, los recorridos, los pasajes y los tiempos de viaje son aproximados: los buses cambian de recorrido y de horario, y los reportes de la comunidad los escriben las personas que usan la aplicación. No garantizamos que sean exactos ni que estén actualizados. Úsalos como guía y mantente atento a tu entorno.</p>
+            <p><strong>El botón de pánico no reemplaza a los servicios de emergencia.</strong> Por ahora Trazia no envía las alertas a la policía ni a otra institución. Ante una emergencia, llama al 911.</p>
+            <p>Los comercios que aparecen como patrocinados pagan por aparecer. Trazia no es responsable de sus productos ni de sus servicios.</p>
+        </section>
+
+        <section id="responsabilidad">
+            <h2>7. Responsabilidad</h2>
+            <p>Trazia se ofrece tal como está, de forma gratuita, y puede tener fallas o dejar de estar disponible por momentos. En la medida en que la ley lo permita, no somos responsables por los daños que resulten de usar la aplicación o de la información que muestra, ni por lo que publiquen otras personas.</p>
+        </section>
+
+        <section id="cambios">
+            <h2>8. Cambios y ley aplicable</h2>
+            <p>Podemos modificar estos términos. Si el cambio es importante, te avisaremos en la aplicación; si sigues usándola después, aceptas los términos nuevos. Estos términos se rigen por las leyes de la República de El Salvador.</p>
+        </section>
+    </article>
+</main>
+
+<footer class="pie">
+    <div class="contenido">
+        {{CONTACTO}}
+        <p class="firma">Trazia · El Salvador</p>
+    </div>
+</footer>
+</body>
+</html>

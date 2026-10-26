@@ -18,7 +18,7 @@ Hace falta Node.js 18.20 o más nuevo.
 
 - `src/pages/index.astro`: arma la página con las secciones.
 - `src/components/`: una sección por archivo (`Portada`,
-  `QueHace`, `ComoFunciona`, `Seguridad`, `Final`, `Pie`), más el `Telefono`
+  `Encuesta`, `QueHace`, `ComoFunciona`, `Emergencia`, `Final`, `Pie`), más el `Telefono`
   que se repite, el `BotonPlay` y los `Iconos` (Material Icons dibujados en
   `<symbol>`).
 - `src/scripts/animations.ts`: **todo** el movimiento. Los componentes solo
@@ -29,17 +29,25 @@ Hace falta Node.js 18.20 o más nuevo.
 - `_anterior/index.html`: la versión anterior (HTML y CSS sin JavaScript).
   Se puede borrar cuando la nueva esté publicada.
 
+## Páginas legales
+
+`legales/` tiene las plantillas del backend tal cual (`trazia_back/src/main/resources/paginas/`).
+`scripts/legales.mjs` corre antes de `npm run dev` y `npm run build` y las deja en
+`public/` como `/privacidad.html`, `/terminos.html` y `/eliminar-cuenta.html`: rellena
+el contacto, ajusta los enlaces y apunta el formulario de borrado al `BACKEND`.
+Para cambiar un texto legal, cambialo en el backend y volvé a copiar el archivo a `legales/`.
+
+El backend tiene que permitir el sitio en CORS (`CORS_ORIGENES=https://traziasv.com,https://www.traziasv.com`),
+o el formulario de eliminar cuenta no va a poder llamarlo.
+
 ## Qué falta conectar
 
-- **URL del backend.** Las páginas legales (`/privacidad`, `/terminos`,
-  `/eliminar-cuenta`) las sirve el backend y la web ahora vive en otro
-  hosting: pon la URL del backend en `BACKEND`, en `src/config.ts`.
-- **Botón de Google Play.** Hoy dice "Muy pronto en Google Play" y no lleva a
-  ningún lado (`src/components/BotonPlay.astro`). Cuando la app esté
-  publicada, cámbialo por un `<a class="boton" href="https://play.google.com/store/apps/details?id=...">`
-  con "Descárgala en".
-- **Correo de contacto.** En `src/components/Pie.astro` hay un comentario con
-  el párrafo listo; cambia `CORREO` por el correo real.
+Todo está en `src/config.ts`:
+
+- **`PLAY_URL`**: el enlace de la app en Google Play. Mientras esté vacío, el
+  botón se ve pero no lleva a ningún lado.
+- **`CORREO`**: el correo de contacto (sale en el pie y en las páginas legales).
+  Confirmá que exista.
 
 ## La paleta
 

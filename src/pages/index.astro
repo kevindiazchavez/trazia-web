@@ -4,13 +4,14 @@ import Barra from "../components/Barra.astro";
 import Portada from "../components/Portada.astro";
 import QueHace from "../components/QueHace.astro";
 import ComoFunciona from "../components/ComoFunciona.astro";
-import Seguridad from "../components/Seguridad.astro";
+import Encuesta from "../components/Encuesta.astro";
+import Emergencia from "../components/Emergencia.astro";
 import Final from "../components/Final.astro";
 import Pie from "../components/Pie.astro";
 ---
 <Base
-    titulo="Trazia · Qué bus tomar en El Salvador"
-    descripcion="Trazia te dice qué bus tomar en El Salvador: la ruta, dónde subir, dónde bajar y cuánto caminar, con avisos en vivo de la comunidad."
+    titulo="Trazia · Cómo llegar en bus a cualquier lugar de El Salvador"
+    descripcion="Escribís a dónde vas y Trazia arma tu viaje en bus: qué buses tomar, dónde subirte, dónde bajarte, cuánto vas a tardar y cuánto vas a pagar. 874 rutas en todo El Salvador."
 >
     <Barra />
     <div class="marco">
@@ -23,9 +24,10 @@ import Pie from "../components/Pie.astro";
         </div>
         <main>
             <Portada />
+            <Encuesta />
             <QueHace />
             <ComoFunciona />
-            <Seguridad />
+            <Emergencia />
             <Final />
         </main>
         <Pie />

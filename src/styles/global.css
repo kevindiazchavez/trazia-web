@@ -30,12 +30,15 @@
     --borde: rgba(17, 24, 39, .08);
     --borde-fuerte: rgba(17, 24, 39, .14);
     --texto: #0b0f0d;
+    /* Todo texto cumple contraste 4.5:1 sobre el blanco y sobre --tarjeta. */
     --suave: #4b5563;
-    --tenue: #6b7280;
-    --oscuro: #0b0f0d;         /* Botones píldora e íconos en círculo. */
+    --tenue: #5b6170;
+    --oscuro: #07100d;         /* El fondo de la marca: botones píldora e íconos en círculo. */
     --verde: #3ab04f;          /* AcentoApp */
-    --verde-oscuro: #0c8a43;   /* El verde para texto sobre blanco. */
-    --neon: #00e676;           /* VerdeBrillante */
+    --verde-marca: #0f9d5c;    /* El verde oscuro de la marca, para fondos y detalles. */
+    --verde-oscuro: #0a7d3e;   /* El verde para texto sobre blanco (5.2:1). */
+    --neon: #00e676;           /* VerdeBrillante, el verde de la marca */
+    --gris-marca: #a8b3ae;     /* El gris claro de texto, sobre fondos oscuros. */
     --lima: #d9ff6f;           /* LimaApp */
     --trafico: #f97316; --desvio: #3b82f6; --averia: #f59e0b; --robo: #ef4444; --manejo: #ec4899;
     --brillo: rgba(0, 230, 118, .45);
@@ -84,17 +87,17 @@ h1 em, h2 em { font-style: normal; color: var(--verde-oscuro); }
 /* ═══ Botones píldora (negros, como la referencia) ═══ */
 .boton {
     position: relative; isolation: isolate; overflow: hidden;
-    display: inline-flex; align-items: center; gap: 10px; padding: 10px 22px 10px 16px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 8px 22px 8px 16px; border-radius: 999px;
     background: var(--oscuro); color: #fff; text-decoration: none; font-weight: 700; line-height: 1.15;
     box-shadow: 0 0 0 3px rgba(11, 15, 13, .08), 0 12px 24px -12px rgba(11, 15, 13, .55);
     transition: scale .2s ease;
 }
 .boton::before { /* El cambio de fondo del hover: una capa verde que aparece. */
-    content: ""; position: absolute; inset: 0; z-index: -1; background: var(--verde-oscuro); opacity: 0; transition: opacity .2s ease;
+    content: ""; position: absolute; inset: 0; z-index: -1; background: var(--verde-marca); opacity: 0; transition: opacity .2s ease;
 }
 .boton svg { width: 24px; height: 24px; flex: none; }
-.boton small { display: block; font-size: .68rem; font-weight: 600; opacity: .75; letter-spacing: .02em; }
-.boton-chico { padding: 9px 18px; font-size: .9rem; }
+.boton small { display: block; font-size: .68rem; font-weight: 600; opacity: .8; letter-spacing: .02em; }
+.boton-chico { padding: 8px 20px; font-size: .9rem; }
 .boton-pronto { cursor: default; }
 @media (hover: hover) {
     .boton:hover { scale: 1.03; }

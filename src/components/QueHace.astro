@@ -2,17 +2,23 @@
 import Telefono from "./Telefono.astro";
 
 const extras = [
-    { icono: "i-mapa", titulo: "Las rutas del país", texto: "Cientos de rutas con su recorrido en el mapa, sus paradas y su pasaje." },
-    { icono: "i-estrella", titulo: "Suma puntos", texto: "Cada reporte que ayuda a otros te da puntos, y los que más ayudan salen en el ranking." },
+    { icono: "i-mapa", titulo: "874 rutas", texto: "Del área metropolitana y del interior del país, con sus paradas y su recorrido." },
+    { icono: "i-reloj", titulo: "Costo total y tiempo", texto: "Antes de salir sabés cuánto vas a pagar en total y cuánto te va a tomar el viaje." },
+];
+// El viaje encadenado de la segunda tarjeta (el de las capturas de la app).
+const cadena = [
+    { tipo: "bus", ruta: "44", color: "var(--neon)", texto: "Subí en Metrocentro" },
+    { tipo: "pie", texto: "Caminá 460 m hasta el otro bus" },
+    { tipo: "bus", ruta: "102A", color: "#22d3ee", texto: "Bajate en el Puerto de La Libertad" },
 ];
 ---
 <section class="seccion" id="que-hace">
     <div class="contenido">
         <div class="intro">
-            <p data-revela>Trazia junta las rutas del país con lo que la gente ve en la calle, para que salgas sabiendo a qué te vas a encontrar.</p>
+            <p data-revela>Trazia te dice cómo llegar a cualquier destino de El Salvador usando el transporte público.</p>
             <div class="titulo" data-revela>
                 <span class="flecha" aria-hidden="true"><svg class="ic"><use href="#i-flecha-abajo" /></svg></span>
-                <h2>Todo lo que necesitas para <em>moverte en bus.</em></h2>
+                <h2>Todo tu viaje, <em>antes de salir.</em></h2>
             </div>
         </div>
 
@@ -20,34 +26,45 @@ const extras = [
             <li class="elevable">
                 <article class="tarjeta">
                     <span class="tarjeta-icono"><svg class="ic" aria-hidden="true"><use href="#i-direcciones" /></svg></span>
-                    <h3>Calcula tu viaje en segundos</h3>
-                    <p>Qué rutas tomar, dónde hacer transbordo, cuánto cuesta el pasaje y cuánto vas a caminar, por calles de verdad.</p>
+                    <h3>Tu viaje completo</h3>
+                    <p>Qué buses tomar, en qué parada subirte, dónde bajarte, cuánto vas a tardar y cuánto vas a pagar en total.</p>
                     <div class="visual visual-telefono"><Telefono escala={0.72} pantallas={["itinerario"]} /></div>
                 </article>
             </li>
             <li class="elevable">
                 <article class="tarjeta tono-acento">
-                    <span class="tarjeta-icono"><svg class="ic" aria-hidden="true"><use href="#i-campana" /></svg></span>
-                    <h3>Avisos en vivo</h3>
-                    <p>Tráfico, desvíos, averías o una parada insegura: lo ves antes de salir.</p>
-                    <ul class="visual avisos" aria-hidden="true">
-                        <li style="--color: var(--trafico)"><i><svg class="ic"><use href="#i-semaforo" /></svg></i><div>Tráfico pesado en la 101<small>hace 2 min</small></div></li>
-                        <li style="--color: var(--desvio)"><i><svg class="ic"><use href="#i-desvio" /></svg></i><div>Desvío en la 29 por obras<small>hace 5 min</small></div></li>
-                        <li style="--color: var(--averia)"><i><svg class="ic"><use href="#i-averia" /></svg></i><div>Bus averiado en la 42<small>hace 1 min</small></div></li>
-                        <li style="--color: var(--manejo)"><i><svg class="ic"><use href="#i-alerta" /></svg></i><div>Manejo temerario en la 7<small>hace 8 min</small></div></li>
-                    </ul>
+                    <span class="tarjeta-icono"><svg class="ic" aria-hidden="true"><use href="#i-transbordo" /></svg></span>
+                    <h3>Hasta tres buses por viaje</h3>
+                    <p>Si no hay un bus directo, Trazia une hasta tres rutas y te marca dónde cambiar, o cuándo te conviene caminar un tramo.</p>
+                    <ol class="visual cadena" aria-hidden="true">
+                        {cadena.map((c) => (
+                            <li class={`c-${c.tipo}`}>
+                                {c.tipo === "bus"
+                                    ? <b class="chip" style={`--c: ${c.color}`}><svg class="ic"><use href="#i-bus" /></svg>{c.ruta}</b>
+                                    : <b class="chip pie"><svg class="ic"><use href="#i-caminar" /></svg></b>}
+                                <span>{c.texto}</span>
+                            </li>
+                        ))}
+                    </ol>
                 </article>
             </li>
             <li class="elevable">
-                <article class="tarjeta tono-canal">
-                    <span class="tarjeta-icono"><svg class="ic" aria-hidden="true"><use href="#i-foro" /></svg></span>
-                    <h3>Un canal por ruta</h3>
-                    <p>Pregunta y responde con quienes viajan en tu misma ruta, firmando con tu apodo.</p>
-                    <div class="visual canal" aria-hidden="true">
-                        <p class="canal-ruta"><b>101</b>Canal de la Ruta 101</p>
-                        <div class="burbuja"><small>kari_sv</small>¿Ya pasó el de las 6?</div>
-                        <div class="burbuja mia"><small>Tú</small>Sí, va por la Masferrer, como a 5 min</div>
-                        <div class="burbuja"><small>don_beto</small>Gracias 🙌</div>
+                <article class="tarjeta tono-mapa">
+                    <span class="tarjeta-icono"><svg class="ic" aria-hidden="true"><use href="#i-lugar" /></svg></span>
+                    <h3>Seguilo en el mapa</h3>
+                    <p>El recorrido se dibuja con las paradas marcadas, para que sepás cuándo te toca bajar.</p>
+                    <div class="visual mapita" aria-hidden="true">
+                        <svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice">
+                            <rect width="300" height="200" class="mm-fondo" />
+                            <path class="mm-calle" d="M-10 60 H310 M-10 140 H310 M70 -10 V210 M190 -10 V210 M-10 190 L310 20" />
+                            <path class="mm-ruta" d="M30 175 C60 170 70 140 100 130 S150 120 170 95 S230 60 265 40" />
+                            <circle class="mm-parada" cx="30" cy="175" r="6" />
+                            <circle class="mm-parada" cx="100" cy="130" r="6" />
+                            <circle class="mm-parada" cx="170" cy="95" r="6" />
+                            <circle class="mm-parada destino" cx="265" cy="40" r="8" />
+                            <g transform="translate(135 115)"><circle class="mm-bus" r="13" /><use href="#i-bus" x="-8" y="-8" width="16" height="16" fill="#07100d" /></g>
+                        </svg>
+                        <span class="bajate">Tu parada</span>
                     </div>
                 </article>
             </li>
@@ -67,7 +84,7 @@ const extras = [
 <style>
     .seccion { padding: 110px 0 60px; }
     .intro { display: grid; grid-template-columns: 1fr 1.25fr; gap: 32px 64px; align-items: center; margin-bottom: 56px; }
-    .intro > p { margin: 0; max-width: 26em; color: var(--suave); }
+    .intro > p { margin: 0; max-width: 26em; color: var(--suave); font-size: 1.05rem; }
     .titulo { display: flex; align-items: center; gap: 24px; }
     .flecha { width: 48px; height: 48px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--oscuro); color: #fff; }
 
@@ -79,7 +96,7 @@ const extras = [
         display: flex; flex-direction: column; align-items: flex-end; text-align: right;
     }
     .tono-acento { background: var(--acento-claro); border-color: rgba(0, 230, 118, .25); }
-    .tono-canal { background: #e8f0ff; border-color: rgba(59, 130, 246, .2); }
+    .tono-mapa { background: #e8f0ff; border-color: rgba(59, 130, 246, .2); }
     .tarjeta-icono { flex: none; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--oscuro); color: #fff; }
     .tarjeta-icono .ic { width: 22px; height: 22px; }
     .tarjeta h3 { margin: 18px 0 8px; font-size: 1.45rem; line-height: 1.15; max-width: 11em; }
@@ -89,27 +106,28 @@ const extras = [
     .visual-telefono { position: relative; height: 230px; }
     .visual-telefono :global(.tel) { position: absolute; left: 18px; top: 58px; transform: rotate(-14deg); transform-origin: 0 0; }
 
-    .avisos { list-style: none; padding: 0 0 30px; display: grid; gap: 10px; text-align: left; }
-    .avisos li {
-        display: flex; align-items: center; gap: 11px; padding: 10px 14px 10px 10px; border-radius: 16px;
-        background: #fff; border: 1px solid var(--borde); box-shadow: 0 10px 24px -16px rgba(17, 24, 39, .3); font-size: .82rem; font-weight: 700;
-    }
-    .avisos li:nth-child(even) { margin-left: 22px; margin-right: -12px; }
-    .avisos small { display: block; color: var(--tenue); font-weight: 500; font-size: .72rem; }
-    .avisos i { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; flex: none; color: #fff; background: var(--color); }
-    .avisos i .ic { width: 20px; height: 20px; }
-
-    /* El chat del canal: burbujas firmadas con el apodo. */
-    .canal { display: flex; flex-direction: column; gap: 10px; padding-bottom: 30px; text-align: left; }
-    .canal-ruta { display: flex; align-items: center; gap: 8px; margin: 0 0 2px; font-size: .78rem; font-weight: 700; color: var(--suave); }
-    .canal-ruta b { padding: 2px 8px; border-radius: 7px; background: var(--neon); color: var(--oscuro); font-size: .72rem; }
-    .burbuja {
-        align-self: flex-start; max-width: 85%; padding: 9px 13px; border-radius: 16px 16px 16px 4px;
+    /* La cadena de buses: cada tramo en una tarjeta, unidos por una línea. */
+    .cadena { list-style: none; margin-bottom: 0; padding: 0 0 30px; display: grid; gap: 10px; text-align: left; position: relative; }
+    .cadena::before { content: ""; position: absolute; left: 30px; top: 20px; bottom: 50px; border-left: 2px dashed rgba(10, 125, 62, .35); }
+    .cadena li {
+        position: relative; display: flex; align-items: center; gap: 12px; padding: 10px 14px 10px 10px; border-radius: 16px;
         background: #fff; border: 1px solid var(--borde); box-shadow: 0 10px 24px -16px rgba(17, 24, 39, .3); font-size: .86rem; font-weight: 600;
     }
-    .burbuja small { display: block; color: var(--desvio); font-size: .7rem; font-weight: 700; }
-    .burbuja.mia { align-self: flex-end; border-radius: 16px 16px 4px 16px; background: var(--oscuro); color: #fff; border-color: transparent; }
-    .burbuja.mia small { color: var(--lima); }
+    .cadena .c-pie { margin-left: 22px; background: transparent; border-style: dashed; box-shadow: none; color: var(--suave); font-weight: 500; }
+    .chip { display: inline-flex; align-items: center; gap: 4px; flex: none; min-width: 64px; height: 30px; padding: 0 10px; border-radius: 9px; background: var(--c); color: var(--oscuro); font-size: .8rem; font-weight: 800; }
+    .chip .ic { width: 15px; height: 15px; }
+    .chip.pie { min-width: 0; width: 30px; padding: 0; justify-content: center; border-radius: 50%; background: #fff3d6; color: #9a5b00; }
+
+    /* El mapa con el recorrido y las paradas. */
+    .mapita { position: relative; height: 230px; margin: 0 -28px; }
+    .mapita svg { width: 100%; height: 100%; display: block; }
+    .mm-fondo { fill: #dbe6fb; }
+    .mm-calle { fill: none; stroke: #fff; stroke-width: 10; stroke-linecap: round; opacity: .8; }
+    .mm-ruta { fill: none; stroke: var(--desvio); stroke-width: 6; stroke-linecap: round; }
+    .mm-parada { fill: #fff; stroke: var(--desvio); stroke-width: 3.5; }
+    .mm-parada.destino { fill: var(--desvio); stroke: #fff; }
+    .mm-bus { fill: var(--neon); stroke: #fff; stroke-width: 3; }
+    .bajate { position: absolute; right: 16%; top: 4px; padding: 6px 12px; border-radius: 999px; background: var(--oscuro); color: #fff; font-size: .78rem; font-weight: 700; }
 
     .extras { list-style: none; margin: 22px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
     .extras li { display: flex; gap: 16px; align-items: flex-start; padding: 22px; border-radius: 22px; background: var(--tarjeta); border: 1px solid var(--borde); }
@@ -123,12 +141,12 @@ const extras = [
         .tarjetas { grid-template-columns: 1fr 1fr; }
         .tarjetas > li:last-child { grid-column: span 2; }
     }
-    /* Tableta: la tarjeta que ocupa todo el ancho va en dos columnas, el chat a un lado. */
+    /* Tableta: la tarjeta que ocupa todo el ancho va en dos columnas, el mapa a un lado. */
     @media (min-width: 621px) and (max-width: 960px) {
         .tarjetas > li:last-child .tarjeta {
             height: auto; padding-bottom: 28px; display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; align-content: center; justify-items: end;
         }
-        .tarjetas > li:last-child .canal { grid-column: 1; grid-row: 1 / span 3; padding: 0; justify-self: stretch; margin: 0; }
+        .tarjetas > li:last-child .mapita { grid-column: 1; grid-row: 1 / span 3; height: 220px; margin: 0; border-radius: 18px; overflow: hidden; justify-self: stretch; }
     }
     @media (max-width: 620px) {
         .seccion { padding: 80px 0 40px; }

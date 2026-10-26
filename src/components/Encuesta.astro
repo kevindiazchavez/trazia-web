@@ -1,0 +1,47 @@
+---
+/*
+ * LA ENCUESTA, en chico: una franja discreta debajo de la portada, para que
+ * no le quite protagonismo a la app. Cifras de la encuesta propia de Trazia
+ * (102 respuestas, sep.–oct. 2026), cada una sobre quienes contestaron esa
+ * pregunta. animations.ts las cuenta desde 0 (data-contador).
+ */
+const cifras = [
+    { valor: 98, texto: "se ha subido al bus equivocado o no supo cuál tomar" },
+    { valor: 89, texto: "perdió 15 minutos o más por eso" },
+    { valor: 86, texto: "gastó dinero de más para llegar" },
+];
+---
+<aside class="encuesta" aria-label="Encuesta a usuarios de bus">
+    <div class="contenido">
+        <div class="franja" data-revela>
+            <p class="fuente">Le preguntamos a <strong>102 personas</strong> que viajan en bus en El Salvador.</p>
+            <ul class="cifras">
+                {cifras.map((c) => (
+                    <li><strong><span data-contador={c.valor}>{c.valor}</span>%</strong><span>{c.texto}</span></li>
+                ))}
+            </ul>
+        </div>
+    </div>
+</aside>
+
+<style>
+    .encuesta { padding: 64px 0 0; }
+    .franja {
+        display: grid; grid-template-columns: minmax(180px, .7fr) 2.3fr; gap: 16px 40px; align-items: center;
+        padding: 20px 28px; border-radius: 22px; background: var(--tarjeta); border: 1px solid var(--borde);
+    }
+    .fuente { margin: 0; color: var(--suave); font-size: .9rem; line-height: 1.45; }
+    .fuente strong { color: var(--texto); }
+    .cifras { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 28px; }
+    .cifras li { display: flex; align-items: center; gap: 12px; font-size: .86rem; line-height: 1.35; color: var(--suave); }
+    .cifras strong { flex: none; font-size: 1.6rem; font-weight: 600; letter-spacing: -.03em; font-variant-numeric: tabular-nums; color: var(--verde-oscuro); }
+
+    @media (max-width: 960px) {
+        .franja { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+        .encuesta { padding-top: 40px; }
+        .franja { padding: 18px 20px; }
+        .cifras { grid-template-columns: 1fr; }
+    }
+</style>

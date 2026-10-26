@@ -1,13 +1,31 @@
-/*
- * Las páginas legales (/privacidad, /terminos, /eliminar-cuenta) las sirve el
- * backend. Ahora que la web vive en otro hosting, los enlaces tienen que
- * llevar la URL completa del backend.
- * TODO: poner la URL real, sin "/" al final (p. ej. "https://api.trazia.app").
- */
-export const BACKEND = "";
+/* Datos del sitio que se usan en varias páginas. scripts/legales.mjs también lee CORREO y BACKEND de acá. */
 
+export const SITIO = "https://traziasv.com";
+
+/*
+ * El backend (Railway), al que llama el formulario de /eliminar-cuenta.html.
+ * Es el TRAZIA_BACKEND_URL_RELEASE de la app. El backend tiene que permitir
+ * este sitio en CORS_ORIGENES (https://traziasv.com,https://www.traziasv.com).
+ */
+export const BACKEND = "https://traziaback-production.up.railway.app";
+
+/*
+ * El enlace de la app en Google Play. Mientras esté vacío, el botón se ve
+ * pero no lleva a ningún lado.
+ * TODO: poner la URL cuando la app esté publicada
+ * (https://play.google.com/store/apps/details?id=...).
+ */
+export const PLAY_URL = "";
+
+/*
+ * El correo de contacto. Sale en el pie y en las páginas legales.
+ * TODO: confirmar que este correo exista y se lea (en el backend es CONTACTO_CORREO).
+ */
+export const CORREO = "soporte@traziasv.com";
+
+/* Las páginas legales: las genera scripts/legales.mjs a partir de legales/. */
 export const legales = {
-    privacidad: `${BACKEND}/privacidad`,
-    terminos: `${BACKEND}/terminos`,
-    eliminarCuenta: `${BACKEND}/eliminar-cuenta`,
+    privacidad: "/privacidad.html",
+    terminos: "/terminos.html",
+    eliminarCuenta: "/eliminar-cuenta.html",
 };
