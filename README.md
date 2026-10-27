@@ -44,8 +44,8 @@ Todo está en `src/config.ts`:
 
 - **`PLAY_URL`**: el enlace de la app en Google Play. Mientras esté vacío, el
   botón se ve pero no lleva a ningún lado.
-- **`CORREO`**: el correo de contacto (sale en el pie y en las páginas legales).
-  Confirmá que exista.
+- **`CORREO`**: el correo de contacto, `soporte.trazia@gmail.com` (sale en el
+  pie y en las páginas legales).
 
 ## La paleta
 

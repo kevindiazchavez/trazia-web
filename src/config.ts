@@ -18,10 +18,10 @@ export const BACKEND = "https://traziaback-production.up.railway.app";
 export const PLAY_URL = "";
 
 /*
- * El correo de contacto. Sale en el pie y en las páginas legales.
- * TODO: confirmar que este correo exista y se lea (en el backend es CONTACTO_CORREO).
+ * El correo de contacto. Sale en el pie y en las páginas legales; es el mismo
+ * que CONTACTO_CORREO en el backend.
  */
-export const CORREO = "soporte@traziasv.com";
+export const CORREO = "soporte.trazia@gmail.com";
 
 /* Las páginas legales: las genera scripts/legales.mjs a partir de legales/. */
 export const legales = {
