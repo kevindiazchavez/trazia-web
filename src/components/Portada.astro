@@ -44,17 +44,17 @@ const buses = [
                 </pattern>
                 <!-- El volumen del bus: los costados en sombra y el techo con luz. Va encima del color de cada bus. -->
                 <linearGradient id="bus-volumen" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#000" stop-opacity=".38" />
-                    <stop offset=".2" stop-color="#000" stop-opacity=".08" />
-                    <stop offset=".5" stop-color="#fff" stop-opacity=".22" />
-                    <stop offset=".8" stop-color="#000" stop-opacity=".08" />
-                    <stop offset="1" stop-color="#000" stop-opacity=".42" />
+                    <stop offset="0" stop-color="#000" stop-opacity=".14" />
+                    <stop offset=".2" stop-color="#fff" stop-opacity=".08" />
+                    <stop offset=".5" stop-color="#fff" stop-opacity=".32" />
+                    <stop offset=".8" stop-color="#fff" stop-opacity=".08" />
+                    <stop offset="1" stop-color="#000" stop-opacity=".16" />
                 </linearGradient>
                 <linearGradient id="bus-vidrio" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0" stop-color="#1e293b" />
-                    <stop offset=".45" stop-color="#334155" />
-                    <stop offset=".55" stop-color="#64748b" />
-                    <stop offset="1" stop-color="#0f172a" />
+                    <stop offset="0" stop-color="#64748b" />
+                    <stop offset=".45" stop-color="#94a3b8" />
+                    <stop offset=".55" stop-color="#cbd5e1" />
+                    <stop offset="1" stop-color="#64748b" />
                 </linearGradient>
             </defs>
             <rect x="-100" y="-100" width="1400" height="1350" fill="url(#manzanas)" />
@@ -84,21 +84,31 @@ const buses = [
                     <rect x="-30" y="-24" width="60" height="48" fill="none" />
                     <g transform="translate(0 13) scale(.74)">
                         <rect class="sombra" x="-33" y="-9" width="70" height="26" rx="8" />
-                        <path class="rueda" d="M-24 -14.5h10v3h-10z M14 -14.5h10v3h-10z M-24 11.5h10v3h-10z M14 11.5h10v3h-10z" />
-                        <path class="espejo" d="M27 -12.5l3 -4h2.5l-2 4z M27 12.5l3 4h2.5l-2 -4z" />
-                        <rect class="carroceria" x="-35" y="-12.5" width="70" height="25" rx="7" />
-                        <rect x="-35" y="-12.5" width="70" height="25" rx="7" fill="url(#bus-volumen)" />
-                        <path class="ventanas" d="M-27 -11h8.5v3.4h-8.5z M-16.5 -11h8.5v3.4h-8.5z M-6 -11h8.5v3.4h-8.5z M4.5 -11h8.5v3.4h-8.5z M15 -11h7v3.4h-7z M-27 7.6h8.5v3.4h-8.5z M-16.5 7.6h8.5v3.4h-8.5z M-6 7.6h8.5v3.4h-8.5z M4.5 7.6h8.5v3.4h-8.5z M15 7.6h7v3.4h-7z" />
-                        <rect class="techo" x="-28" y="-6" width="51" height="12" rx="3.5" />
-                        <rect class="aire" x="-21" y="-4" width="13" height="8" rx="1.8" />
-                        <path class="rejilla" d="M-19 -2h9 M-19 0h9 M-19 2h9" />
-                        <rect class="aire" x="-3" y="-4" width="13" height="8" rx="1.8" />
-                        <path class="rejilla" d="M-1 -2h9 M-1 0h9 M-1 2h9" />
-                        <path d="M25.5 -11h4.5a5 5 0 0 1 5 5v12a5 5 0 0 1-5 5h-4.5z" fill="url(#bus-vidrio)" />
-                        <path class="reflejo" d="M28 -8.5l3.5 5" />
-                        <path class="faro" d="M34.2 -10.5h1.3v3h-1.3z M34.2 7.5h1.3v3h-1.3z" />
-                        <path class="luz-trasera" d="M-35.5 -10.5h1.3v3.5h-1.3z M-35.5 7h1.3v3.5h-1.3z" />
-                        <rect class="borde" x="-35" y="-12.5" width="70" height="25" rx="7" />
+                        <!-- Espejos adelante, a los lados. -->
+                        <path class="espejo" d="M29 -12.5v-2.5h2.2v-1.6h1.6v4.1z M29 12.5v2.5h2.2v1.6h1.6v-4.1z" />
+                        <rect class="carroceria" x="-35" y="-12.5" width="70" height="25" rx="6.5" />
+                        <rect x="-35" y="-12.5" width="70" height="25" rx="6.5" fill="url(#bus-volumen)" />
+                        <!-- Brillo del techo pintado, a lo largo. -->
+                        <path class="reflejo" d="M-22 -7.5H26" />
+                        <!-- Atrás: la luneta, la tapa del motor y las luces. -->
+                        <path class="luneta" d="M-25 -10.5h-5a3 3 0 0 0-3 3v15a3 3 0 0 0 3 3h5z" fill="url(#bus-vidrio)" />
+                        <!-- Escotillas del techo. -->
+                        <rect class="escotilla" x="-17" y="-3.2" width="6.4" height="6.4" rx=".9" />
+                        <rect class="escotilla" x="21" y="-3.2" width="6.4" height="6.4" rx=".9" />
+                        <!-- El aire acondicionado: un bloque alzado en medio del techo, con sus ventiladores. -->
+                        <rect class="sombra-modulo" x="-4.2" y="-10" width="22" height="20.6" rx="3.2" />
+                        <rect class="carroceria" x="-3" y="-10.3" width="22" height="20.6" rx="3.2" />
+                        <rect x="-3" y="-10.3" width="22" height="20.6" rx="3.2" fill="url(#bus-volumen)" />
+                        <rect class="modulo-borde" x="-3" y="-10.3" width="22" height="20.6" rx="3.2" />
+                        <rect class="rejilla" x="1" y="-3" width="14" height="6" rx=".8" />
+                        <g class="ventilador">
+                            <circle cx="3" cy="0" r="1.6" /><circle cx="6.3" cy="0" r="1.6" />
+                            <circle cx="9.6" cy="0" r="1.6" /><circle cx="12.9" cy="0" r="1.6" />
+                        </g>
+                        <rect class="borde" x="-35" y="-12.5" width="70" height="25" rx="6.5" />
+                        <!-- Las luces van encima del borde para que se vean. -->
+                        <path class="luz-trasera" d="M-34.6 -10.4h2v4h-2z M-34.6 6.4h2v4h-2z" />
+                        <path class="faro" d="M32.8 -9.6h1.8v3h-1.8z M32.8 6.6h1.8v3h-1.8z" />
                     </g>
                 </g>
             ))}
@@ -106,7 +116,6 @@ const buses = [
     </div>
 
     <div class="contenido">
-        <p class="insignia" data-hero data-hero-pieza>874 rutas de bus · El Salvador</p>
         <h1 data-hero data-hero-titulo>Sabé qué bus tomar, <em>sin preguntarle a nadie.</em></h1>
         <p class="bajada" data-hero data-hero-pieza>Escribís a dónde vas y Trazia arma el viaje completo: qué buses tomar, dónde subirte, dónde bajarte, cuánto vas a tardar y cuánto vas a pagar.</p>
         <div class="acciones" data-hero data-hero-pieza>
@@ -140,23 +149,19 @@ const buses = [
     .ruta { stroke: var(--linea); stroke-width: 3.5; opacity: .75; }
     .parada { fill: #fff; stroke: var(--linea); stroke-width: 3; }
     /* El bus: color de su ruta, con volumen, vidrios oscuros, faros y sombra suave en el piso. */
-    .bus .sombra { fill: rgba(17, 24, 39, .16); }
-    .bus .rueda { fill: #1f2937; }
-    .bus .espejo { fill: #374151; }
+    .bus .sombra { fill: rgba(17, 24, 39, .1); }
+    .bus .espejo { fill: #4b5563; }
     .bus .carroceria { fill: var(--color); }
-    .bus .ventanas { fill: #1e293b; opacity: .82; }
-    .bus .techo { fill: var(--color); stroke: rgba(255, 255, 255, .55); stroke-width: 1; }
-    .bus .aire { fill: #eef1f4; stroke: rgba(15, 23, 42, .25); stroke-width: .8; }
-    .bus .rejilla { stroke: rgba(15, 23, 42, .28); stroke-width: .8; }
-    .bus .reflejo { stroke: rgba(255, 255, 255, .45); stroke-width: 1.4; stroke-linecap: round; }
+    .bus .sombra-modulo { fill: rgba(15, 23, 42, .18); }
+    .bus .modulo-borde { fill: none; stroke: rgba(255, 255, 255, .55); stroke-width: .8; }
+    .bus .escotilla { fill: #6b7280; stroke: rgba(255, 255, 255, .6); stroke-width: .7; }
+    .bus .rejilla { fill: #6b7280; }
+    .bus .ventilador circle { fill: #9ca3af; stroke: #e5e7eb; stroke-width: .5; }
+    .bus .reflejo { stroke: rgba(255, 255, 255, .4); stroke-width: 1.6; stroke-linecap: round; }
     .bus .faro { fill: #fde68a; }
     .bus .luz-trasera { fill: #ef4444; }
     .bus .borde { fill: none; stroke: #fff; stroke-width: 1.6; }
 
-    .insignia {
-        display: inline-flex; margin: 0 0 24px; padding: 7px 16px; border-radius: 999px;
-        border: 1px solid var(--borde-fuerte); background: rgba(255, 255, 255, .7); color: var(--texto); font-size: .85rem; font-weight: 600;
-    }
     h1 { margin: 0 auto 20px; max-width: 15ch; font-size: clamp(2.4rem, 5.4vw, 4.1rem); line-height: 1.05; }
     .bajada { margin: 0 auto 32px; max-width: 34em; color: var(--suave); font-size: clamp(1rem, 1.6vw, 1.12rem); }
     .acciones { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px 22px; }

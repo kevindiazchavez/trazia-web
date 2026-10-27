@@ -83,12 +83,12 @@ function partirPalabras(titulo: HTMLElement) {
 }
 
 /* ═══ 1. Entrada de la portada (~1.2 s) ═══
- * Insignia → título palabra por palabra → bajada → botones; después el
- * teléfono sube, se dibujan las rutas y aparecen los buses. */
+ * Las rutas se dibujan y los buses aparecen desde el primer momento; a la vez
+ * entra el título palabra por palabra → bajada → botones, y el teléfono sube. */
 function entradaPortada() {
     const titulo = uno("[data-hero-titulo]");
     const palabras = titulo ? partirPalabras(titulo) : [];
-    const [insignia, ...resto] = todos("[data-hero-pieza]");
+    const piezas = todos("[data-hero-pieza]");
     const telefono = uno("[data-hero-telefono]");
     const lineas = todos<SVGPathElement>("[data-linea]");
     const buses = todos<SVGGElement>("[data-bus]");
@@ -98,10 +98,10 @@ function entradaPortada() {
     gsap.set(lineas, { strokeDasharray: 1, strokeDashoffset: 1 });
 
     const tl = gsap.timeline({ defaults: { ease: "power3.out", duration: 0.5 } });
-    tl.fromTo([insignia, ...palabras, ...resto], { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, stagger: 0.08 })
-        .fromTo(telefono, { autoAlpha: 0, y: 80, scale: 0.95 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.9 }, "-=0.35")
-        .to(lineas, { strokeDashoffset: 0, duration: 1.3, ease: "power2.inOut", stagger: 0.06 }, "-=0.2")
-        .fromTo(buses, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, stagger: 0.06 }, "-=0.6");
+    tl.to(lineas, { strokeDashoffset: 0, duration: 1.1, ease: "power2.out", stagger: 0.05 }, 0)
+        .fromTo(buses, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, stagger: 0.04 }, 0.15)
+        .fromTo([...palabras, ...piezas], { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, stagger: 0.06 }, 0)
+        .fromTo(telefono, { autoAlpha: 0, y: 80, scale: 0.95 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.9 }, "-=0.35");
 }
 
 /* El recorrido de un bus por su ruta: arranca en data-desde y da la vuelta
