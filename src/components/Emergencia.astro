@@ -1,24 +1,25 @@
 ---
 /*
- * EL BOTÓN DE EMERGENCIA. Se presenta solo como acceso rápido al 911: Trazia
- * no vigila, no responde ni interviene; la emergencia la atiende la PNC.
+ * EL BOTÓN DE EMERGENCIA. Se presenta solo como acceso rápido a la llamada de
+ * emergencias, sin nombrar el número ni la institución: Trazia no vigila, no
+ * responde ni interviene; la llamada la atiende el servicio de emergencias.
  * Nunca describirlo como protección o seguridad.
  */
 import Telefono from "./Telefono.astro";
 
 const puntos = [
-    { icono: "i-llamada", titulo: "Marca directo al 911", texto: "Sin andar buscando el número cuando no hay tiempo de buscarlo." },
-    { icono: "i-lugar", titulo: "Tu ubicación a mano", texto: "Para que se la des al operador apenas te conteste." },
-    { icono: "i-persona", titulo: "La atiende la PNC", texto: "Trazia no vigila, no responde ni interviene: de eso se encarga la Policía Nacional Civil. Trazia solo te acorta el camino hasta ellos." },
+    { icono: "i-llamada", titulo: "Acceso rápido a emergencias", texto: "Llamá al número de emergencias sin tener que buscarlo." },
+    { icono: "i-lugar", titulo: "Tu ubicación a mano", texto: "Consultá tu ubicación para compartirla con quien te atienda." },
+    { icono: "i-persona", titulo: "Vos decidís cuándo llamar", texto: "Trazia facilita el acceso a la llamada, pero no sustituye los servicios de emergencia." },
 ];
 ---
 <section class="emergencia" id="emergencia">
     <div class="contenido">
         <div class="panel">
             <div class="texto">
-                <p class="previa" data-revela>Botón de emergencia</p>
-                <h2 data-revela>Un toque y estás <em>llamando al 911.</em></h2>
-                <p class="bajada" data-revela>Si te sentís inseguro dentro del bus, presenciás un robo o necesitás reportar algo que está pasando en ese momento, tocás el botón y entra la llamada al 911.</p>
+                <p class="previa" data-revela>Tu seguridad también importa</p>
+                <h2 data-revela>Viajá con una opción de <em>ayuda disponible.</em></h2>
+                <p class="bajada" data-revela>Si ocurre una emergencia durante tu recorrido, encontrá en Trazia una forma rápida de iniciar una llamada de emergencia.</p>
                 <ul class="puntos" data-revela-grupo="0.15">
                     {puntos.map((p) => (
                         <li>

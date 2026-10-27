@@ -175,20 +175,59 @@ function busesEnRuta() {
 
 /* El paso que está a la vista se marca, mientras el teléfono queda sticky al lado (el sticky es CSS). */
 function pasoActivo() {
-    // El teléfono de al lado muestra la pantalla de ese paso (una data-vista por paso, en orden).
-    const vistas = todos("[data-pasos-telefono] [data-vista]");
-    const mostrar = (n: number) =>
-        vistas.forEach((v, i) => gsap.to(v, { autoAlpha: i === n ? 1 : 0, duration: 0.4, ease: "power2.out", overwrite: true }));
-
     todos("[data-paso]").forEach((paso, i) => {
         ScrollTrigger.create({
             trigger: paso,
             start: "top 60%",
             end: "bottom 40%",
-            toggleClass: "es-activo",
-            onEnter: () => mostrar(i),
-            onEnterBack: () => mostrar(i),
+            onToggle: ({ isActive }) => {
+                if (isActive) pasos.porScroll = i;
+                else if (pasos.porScroll === i) pasos.porScroll = null;
+                marcarPaso();
+            },
         });
+    });
+}
+
+/* Qué paso se muestra: manda el puntero si está encima de los pasos; si no, el
+   último tocado o el que está a la vista con el scroll. */
+const pasos = { porScroll: null as number | null, porPuntero: null as number | null };
+
+function marcarPaso() {
+    const n = pasos.porPuntero ?? pasos.porScroll;
+    todos("[data-paso]").forEach((p, i) => p.classList.toggle("es-activo", i === n));
+    if (n === null) return;
+    // El teléfono de al lado muestra la pantalla de ese paso (una data-vista por paso, en orden).
+    const duration = matchMedia(CON_MOVIMIENTO).matches ? 0.4 : 0;
+    todos("[data-pasos-telefono] [data-vista]").forEach((v, i) =>
+        gsap.to(v, { autoAlpha: i === n ? 1 : 0, duration, ease: "power2.out", overwrite: true }),
+    );
+}
+
+/* Al pasar el mouse por un paso, o al tocarlo o elegirlo con el teclado, el
+   teléfono muestra su pantalla. En todas las pantallas y con o sin movimiento. */
+function pasosConPuntero() {
+    const lista = uno(".pasos");
+    todos("[data-paso]").forEach((paso, i) => {
+        paso.addEventListener("pointerenter", (e) => {
+            if (e.pointerType !== "mouse") return;
+            pasos.porPuntero = i;
+            marcarPaso();
+        });
+        const elegir = () => {
+            pasos.porScroll = i;
+            marcarPaso();
+        };
+        paso.addEventListener("click", elegir);
+        paso.addEventListener("keydown", (e) => {
+            if (e.key !== "Enter" && e.key !== " ") return;
+            e.preventDefault();
+            elegir();
+        });
+    });
+    lista?.addEventListener("pointerleave", () => {
+        pasos.porPuntero = null;
+        marcarPaso();
     });
 }
 
@@ -253,6 +292,7 @@ const raiz = document.documentElement;
 const medios = gsap.matchMedia();
 
 barra();
+pasosConPuntero();
 
 medios.add(CON_MOVIMIENTO, () => {
     const pararScroll = scrollSuave();

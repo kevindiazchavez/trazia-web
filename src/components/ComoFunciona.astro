@@ -12,14 +12,14 @@ const pasos = [
 <section class="seccion" id="como-funciona">
     <div class="contenido">
         <div class="encabezado">
-            <h2 data-revela>De tu casa a donde vas, <em>en cuatro pasos.</em></h2>
-            <p data-revela>Sin preguntarle a nadie ni adivinar en la parada: desde que escribís tu destino hasta que te bajás del bus.</p>
+            <h2 data-revela>¿No sabés qué bus tomar? <em>Trazia te guía.</em></h2>
+            <p data-revela>Buscá tu destino, conocé las rutas que podés tomar y seguí tu recorrido hasta llegar.</p>
         </div>
 
         <div class="recorrido">
             <ol class="pasos">
                 {pasos.map((p, i) => (
-                    <li class="paso elevable" data-paso>
+                    <li class="paso elevable" tabindex="0" data-paso>
                         <div class="paso-cabeza">
                             <h3>{p.titulo}</h3>
                             <span class="paso-num">{String(i + 1).padStart(2, "0")}</span>
@@ -48,7 +48,8 @@ const pasos = [
 
     .recorrido { display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: start; }
     .pasos { list-style: none; margin: 0; padding: 40px 0 120px; display: grid; gap: 56px; }
-    .paso { width: 76%; padding: 22px 24px; border-radius: 22px; background: var(--tarjeta); border: 1px solid var(--borde); }
+    .paso { width: 76%; padding: 22px 24px; border-radius: 22px; background: var(--tarjeta); border: 1px solid var(--borde); cursor: pointer; }
+    .paso:focus-visible { outline: 2px solid var(--verde-oscuro); outline-offset: 3px; }
     .paso:nth-child(odd) { justify-self: end; }
     /* El borde verde del paso activo: una capa que aparece. */
     .paso::before {

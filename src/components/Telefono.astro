@@ -11,7 +11,7 @@
  *                la ruta se dibuja y el bus la recorre (data-tel-ruta, data-tel-bus)
  *   itinerario   el viaje elegido, tramo por tramo
  *   recorrido    el viaje en el mapa con las paradas marcadas
- *   llamada      el botón de emergencia marcando al 911; las ondas laten (data-pulso)
+ *   llamada      el botón de emergencia llamando a emergencias; las ondas laten (data-pulso)
  *
  * El viaje de ejemplo es el de las capturas de la app: Metrocentro → Puerto
  * de La Libertad, Ruta 44 + Ruta 102A. Los textos van en voseo, como la web.
@@ -225,16 +225,16 @@ const paradas = [[188, 173], [150, 198], [118, 216], [100, 244], [94, 270], [84,
                     {p === "llamada" && (
                         <>
                             <small class="mayus rojo">Botón de emergencia</small>
-                            <p class="hoja-titulo grande">Llamando al 911</p>
+                            <p class="hoja-titulo grande">Llamando a emergencias</p>
                             <div class="pulsador">
                                 <i data-pulso></i><i data-pulso></i><i data-pulso></i>
                                 <span class="boton-911"><svg class="ic"><use href="#i-llamada" /></svg></span>
                             </div>
                             <div class="ubicacion">
                                 <i><svg class="ic"><use href="#i-lugar" /></svg></i>
-                                <div><small>Tu ubicación, para dársela al operador</small>Alameda Roosevelt y 49 Av. Sur, San Salvador</div>
+                                <div><small>Tu ubicación, para compartirla con quien te atienda</small>Alameda Roosevelt y 49 Av. Sur, San Salvador</div>
                             </div>
-                            <p class="nota-911">La emergencia la atiende la Policía Nacional Civil.</p>
+                            <p class="nota-911">Tu llamada la atiende el servicio de emergencias, no Trazia.</p>
                             <div class="colgar"><svg class="ic"><use href="#i-llamada" /></svg></div>
                         </>
                     )}
@@ -264,6 +264,8 @@ const paradas = [[188, 173], [150, 198], [118, 216], [100, 244], [94, 270], [84,
         --app-fondo: #10231f; --app-tarjeta: #222222; --app-hoja: #1c1c1c; --app-borde: rgba(255, 255, 255, .07);
         --app-suave: #b8bfbc; --app-tenue: #8b9290; --texto: #fff; --cian: #22d3ee;
         color: var(--texto); text-align: left; line-height: 1.3;
+        /* Es un dibujo de la app: que su texto no se seleccione ni se copie, como en una captura. */
+        -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
     }
     .telefono {
         width: 296px; height: 604px; border-radius: 48px; padding: 11px; position: relative;
@@ -293,7 +295,7 @@ const paradas = [[188, 173], [150, 198], [118, 216], [100, 244], [94, 270], [84,
     /* ═══ Pantallas apiladas: la primera se ve, las demás esperan ═══ */
     .vista { position: absolute; inset: 0; display: flex; flex-direction: column; }
     .vista + .vista { opacity: 0; visibility: hidden; }
-    .v-inicio, .v-avisos { padding: 50px 16px 0; }
+    .v-inicio { padding: 50px 16px 0; }
     .ic { width: 16px; height: 16px; }
     small { display: block; font-weight: 500; color: var(--app-tenue); font-size: .62rem; }
     .mayus { text-transform: uppercase; letter-spacing: .14em; font-size: .56rem; font-weight: 600; }
