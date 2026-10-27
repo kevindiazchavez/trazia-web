@@ -35,6 +35,15 @@ const canonica = new URL(Astro.url.pathname, SITIO).href;
         // Si animations.ts no llega, a los 3 s se muestra igual.
         document.documentElement.classList.add("js");
         setTimeout(function () { document.documentElement.classList.add("anim-listo"); }, 3000);
+
+        // Al refrescar, la página vuelve al inicio en vez de quedarse donde iba
+        // (y sin el #sección de la dirección). Los enlaces a una sección siguen funcionando.
+        if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+        var navegacion = performance.getEntriesByType && performance.getEntriesByType("navigation")[0];
+        if (navegacion && navegacion.type === "reload") {
+            if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+            window.scrollTo(0, 0);
+        }
     </script>
 </head>
 <body>
