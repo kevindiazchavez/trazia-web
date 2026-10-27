@@ -26,12 +26,10 @@ Hace falta Node.js 18.20 o más nuevo.
   archivo.
 - `src/styles/global.css`: la paleta y lo compartido.
 - `public/marca/`: el logo y la letra.
-- `_anterior/index.html`: la versión anterior (HTML y CSS sin JavaScript).
-  Se puede borrar cuando la nueva esté publicada.
 
 ## Páginas legales
 
-`legales/` tiene las plantillas del backend tal cual (`trazia_back/src/main/resources/paginas/`).
+`legales/` tiene las plantillas de las páginas legales, las mismas del backend (`trazia_back/src/main/resources/paginas/`).
 `scripts/legales.mjs` corre antes de `npm run dev` y `npm run build` y las deja en
 `public/` como `/privacidad.html`, `/terminos.html` y `/eliminar-cuenta.html`: rellena
 el contacto, ajusta los enlaces y apunta el formulario de borrado al `BACKEND`.

@@ -9,5 +9,5 @@ public/privacidad.html
 public/terminos.html
 public/eliminar-cuenta.html
 
-# Copia del fondo anterior de la portada (solo local)
-_respaldo-fondo/
+# Configuración local del editor
+.vscode/
