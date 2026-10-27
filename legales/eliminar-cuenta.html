@@ -8,7 +8,7 @@
     <style nonce="{{NONCE}}">
         :root {
             color-scheme: light dark;
-            --fondo: #f4f7f5; --papel: #ffffff; --texto: #14201a; --suave: #3d4d45; --tenue: #66766e;
+            --fondo: #f4f7f5; --papel: #ffffff; --texto: #14201a; --suave: #3d4d45; --tenue: #56655d;
             --borde: #dde5e1; --marca: #0a8a54; --marca-texto: #08704a; --marca-fondo: #e9f6ef;
         }
         @media (prefers-color-scheme: dark) {
@@ -32,11 +32,10 @@
             display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
             gap: 8px 24px; padding-top: 14px; padding-bottom: 14px;
         }
-        .logo { display: inline-flex; align-items: center; gap: 10px; color: var(--texto); text-decoration: none; font-weight: 700; font-size: 1.15rem; letter-spacing: -.01em; }
-        .logo-marca { width: 28px; height: 28px; border-radius: 8px; background: var(--marca); display: inline-grid; place-items: center; }
-        .logo-marca::after { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 3px solid var(--papel); }
+        .logo { display: inline-flex; align-items: center; min-height: 48px; gap: 10px; color: var(--texto); text-decoration: none; font-weight: 700; font-size: 1.15rem; letter-spacing: -.01em; }
+        .logo img { width: 32px; height: 32px; border-radius: 50%; flex: none; }
         .menu { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: .95rem; }
-        .menu a { color: var(--suave); text-decoration: none; padding: 4px 0; border-bottom: 2px solid transparent; }
+        .menu a { display: inline-flex; align-items: center; min-height: 48px; color: var(--suave); text-decoration: none; border-bottom: 2px solid transparent; }
         .menu a:hover { color: var(--texto); }
         .menu a[aria-current="page"] { color: var(--texto); font-weight: 600; border-bottom-color: var(--marca); }
 
@@ -121,7 +120,7 @@
 <body>
 <header class="cabecera">
     <div class="contenido">
-        <a class="logo" href="/privacidad"><span class="logo-marca" aria-hidden="true"></span>Trazia</a>
+        <a class="logo" href="/privacidad"><img src="/marca/trazia-logo-128.png" alt="" width="32" height="32">Trazia</a>
         <nav class="menu" aria-label="Páginas legales">
             <a href="/privacidad">Privacidad</a>
             <a href="/terminos">Términos de uso</a>
@@ -145,7 +144,8 @@
                 <li>Tu historial de viajes.</li>
                 <li>Tus reportes, respuestas, reacciones y mensajes en los canales.</li>
                 <li>Tus reseñas de comercios y tus sugerencias.</li>
-                <li>Tus alertas del botón de pánico.</li>
+                <li>Tus alertas del botón de emergencia.</li>
+                <li>Las paradas que marcaste y tus puntos de la comunidad.</li>
                 <li>Tus denuncias y la lista de personas que bloqueaste.</li>
             </ul>
             <p class="advertencia"><strong>El borrado es inmediato y no se puede deshacer.</strong> Solo se conservan registros anónimos de búsquedas, que nunca estuvieron asociados a tu cuenta. Puedes leer más en la <a href="/privacidad#derechos">política de privacidad</a>.</p>

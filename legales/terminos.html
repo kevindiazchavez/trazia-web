@@ -8,7 +8,7 @@
     <style nonce="{{NONCE}}">
         :root {
             color-scheme: light dark;
-            --fondo: #f4f7f5; --papel: #ffffff; --texto: #14201a; --suave: #3d4d45; --tenue: #66766e;
+            --fondo: #f4f7f5; --papel: #ffffff; --texto: #14201a; --suave: #3d4d45; --tenue: #56655d;
             --borde: #dde5e1; --marca: #0a8a54; --marca-texto: #08704a; --marca-fondo: #e9f6ef;
         }
         @media (prefers-color-scheme: dark) {
@@ -32,11 +32,10 @@
             display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
             gap: 8px 24px; padding-top: 14px; padding-bottom: 14px;
         }
-        .logo { display: inline-flex; align-items: center; gap: 10px; color: var(--texto); text-decoration: none; font-weight: 700; font-size: 1.15rem; letter-spacing: -.01em; }
-        .logo-marca { width: 28px; height: 28px; border-radius: 8px; background: var(--marca); display: inline-grid; place-items: center; }
-        .logo-marca::after { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 3px solid var(--papel); }
+        .logo { display: inline-flex; align-items: center; min-height: 48px; gap: 10px; color: var(--texto); text-decoration: none; font-weight: 700; font-size: 1.15rem; letter-spacing: -.01em; }
+        .logo img { width: 32px; height: 32px; border-radius: 50%; flex: none; }
         .menu { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: .95rem; }
-        .menu a { color: var(--suave); text-decoration: none; padding: 4px 0; border-bottom: 2px solid transparent; }
+        .menu a { display: inline-flex; align-items: center; min-height: 48px; color: var(--suave); text-decoration: none; border-bottom: 2px solid transparent; }
         .menu a:hover { color: var(--texto); }
         .menu a[aria-current="page"] { color: var(--texto); font-weight: 600; border-bottom-color: var(--marca); }
 
@@ -91,7 +90,7 @@
 <body>
 <header class="cabecera">
     <div class="contenido">
-        <a class="logo" href="/privacidad"><span class="logo-marca" aria-hidden="true"></span>Trazia</a>
+        <a class="logo" href="/privacidad"><img src="/marca/trazia-logo-128.png" alt="" width="32" height="32">Trazia</a>
         <nav class="menu" aria-label="Páginas legales">
             <a href="/privacidad">Privacidad</a>
             <a href="/terminos" aria-current="page">Términos de uso</a>
@@ -141,7 +140,7 @@
                 <li>Información falsa a propósito, como reportes inventados, o hacerte pasar por otra persona o institución.</li>
                 <li>Cualquier contenido que promueva delitos o actividades ilegales.</li>
             </ul>
-            <p>Tampoco está permitido usar el botón de pánico para enviar alertas falsas, intentar entrar a cuentas ajenas, saturar el servicio ni copiar sus datos de forma automatizada.</p>
+            <p>Tampoco está permitido usar el botón de emergencia para enviar alertas falsas, intentar entrar a cuentas ajenas, saturar el servicio ni copiar sus datos de forma automatizada.</p>
         </section>
 
         <section id="denunciar">
@@ -163,7 +162,7 @@
         <section id="informacion">
             <h2>6. La información de Trazia</h2>
             <p>Las rutas, los recorridos, los pasajes y los tiempos de viaje son aproximados: los buses cambian de recorrido y de horario, y los reportes de la comunidad los escriben las personas que usan la aplicación. No garantizamos que sean exactos ni que estén actualizados. Úsalos como guía y mantente atento a tu entorno.</p>
-            <p><strong>El botón de pánico no reemplaza a los servicios de emergencia.</strong> Por ahora Trazia no envía las alertas a la policía ni a otra institución. Ante una emergencia, llama al 911.</p>
+            <p><strong>El botón de emergencia no reemplaza a los servicios de emergencia.</strong> Por ahora Trazia no envía las alertas a la policía ni a otra institución. Ante una emergencia, llama al 911.</p>
             <p>Los comercios que aparecen como patrocinados pagan por aparecer. Trazia no es responsable de sus productos ni de sus servicios.</p>
         </section>
 

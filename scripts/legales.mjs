@@ -1,8 +1,9 @@
 /*
  * Arma las páginas legales del sitio a partir de las plantillas del backend.
  *
- * legales/*.html son copias tal cual de trazia_back/src/main/resources/paginas/.
- * Para actualizarlas, se vuelven a copiar ahí; este script corre solo antes de
+ * legales/*.html tienen el mismo texto que trazia_back/src/main/resources/paginas/;
+ * solo cambia el diseño: el logo real, el gris --tenue con contraste 4.5:1 y los
+ * enlaces de la cabecera de 48 px. Este script corre solo antes de
  * `npm run dev` y `npm run build` y deja el resultado en public/ (que no va a git).
  *
  * Lo que cambia respecto de la plantilla, y nada más:
