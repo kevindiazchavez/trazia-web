@@ -10,6 +10,7 @@
  *   data-contador                                                     las cifras de la encuesta, que cuentan desde 0
  *   data-telefono (data-tel-ruta, data-tel-bus, data-vista)           la ruta y el bus dentro de cada teléfono, y sus pantallas
  *   data-pulso                                                        las ondas que laten en la llamada del botón de emergencia
+ *   data-sube                                                         el teléfono del cierre, que sube desde abajo de su cuadro
  *   data-paralaje, data-mancha, data-barra                            paralaje, degradados del fondo y la barra
  *
  * Reglas: solo se anima transform y opacity (más el trazo de las rutas SVG).
@@ -166,11 +167,23 @@ function contadores() {
 
 /* ═══ Solo en escritorio ═══ */
 
+/* Las animaciones que no paran se congelan mientras su zona no se ve, para que
+   el navegador no trabaje en lo que no está en pantalla, y siguen al volver. */
+function soloAlVerse(animaciones: gsap.core.Animation[], zona: Element | null) {
+    if (!zona) return;
+    animaciones.forEach((a) => a.timeScale(0));
+    ScrollTrigger.create({
+        trigger: zona,
+        start: "top bottom",
+        end: "bottom top",
+        onToggle: ({ isActive }) => animaciones.forEach((a) => a.timeScale(isActive ? 1 : 0)),
+    });
+}
+
 /* Los buses de la portada andan por sus rutas sin parar. */
 function busesEnRuta() {
-    todos<SVGGElement>("[data-bus]").forEach((bus) => {
-        gsap.to(bus, { ...recorrido(bus), repeat: -1 });
-    });
+    const vueltas = todos<SVGGElement>("[data-bus]").map((bus) => gsap.to(bus, { ...recorrido(bus), repeat: -1 }));
+    soloAlVerse(vueltas, uno(".portada"));
 }
 
 /* El paso que está a la vista se marca, mientras el teléfono queda sticky al lado (el sticky es CSS). */
@@ -249,16 +262,35 @@ function telefonos() {
                 ease: "none",
                 repeat: -1,
             }, "<");
+        soloAlVerse([tl], tel);
     });
 }
 
 /* Las ondas de la alerta salen del botón y se desvanecen, una tras otra. */
 function pulsos() {
-    gsap.fromTo(
-        "[data-pulso]",
-        { scale: 1, opacity: 0.7 },
-        { scale: 2, opacity: 0, duration: 2.4, ease: "power1.out", stagger: { each: 0.8, repeat: -1 } },
-    );
+    todos("[data-telefono]").forEach((tel) => {
+        const ondas = todos("[data-pulso]", tel);
+        if (!ondas.length) return;
+        const latido = gsap.fromTo(
+            ondas,
+            { scale: 1, opacity: 0.7 },
+            { scale: 2, opacity: 0, duration: 2.4, ease: "power1.out", stagger: { each: 0.8, repeat: -1 } },
+        );
+        soloAlVerse([latido], tel);
+    });
+}
+
+/* El teléfono del cierre espera escondido bajo el borde de su cuadro y sube
+   hasta su lugar cuando el cuadro aparece. */
+function telefonoSube() {
+    todos("[data-sube]").forEach((el) => {
+        gsap.fromTo(el, { yPercent: 105 }, {
+            yPercent: 0,
+            duration: 1.3,
+            ease: "power3.out",
+            scrollTrigger: { trigger: el.closest("section") ?? el, start: "top 65%", once: true },
+        });
+    });
 }
 
 /* El teléfono del cierre se mueve más lento que el scroll. */
@@ -275,7 +307,7 @@ function paralaje() {
 /* Los degradados del fondo derivan muy despacio, casi sin notarse. */
 function manchas() {
     todos("[data-mancha]").forEach((el) => {
-        gsap.to(el, {
+        const deriva = gsap.to(el, {
             xPercent: gsap.utils.random(-14, 14),
             yPercent: gsap.utils.random(-10, 10),
             scale: gsap.utils.random(0.9, 1.15),
@@ -284,6 +316,7 @@ function manchas() {
             repeat: -1,
             yoyo: true,
         });
+        soloAlVerse([deriva], el);
     });
 }
 
@@ -298,6 +331,7 @@ medios.add(CON_MOVIMIENTO, () => {
     const pararScroll = scrollSuave();
     entradaPortada();
     revelar(40);
+    telefonoSube();
     contadores();
     return pararScroll;
 });

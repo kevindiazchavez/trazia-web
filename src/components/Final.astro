@@ -13,9 +13,12 @@ import BotonPlay from "./BotonPlay.astro";
                     <p>Disponible para Android.<br>Llega a iPhone más adelante.</p>
                 </div>
             </div>
-            <!-- El teléfono se mueve más lento que el scroll (paralaje, solo en escritorio). -->
+            <!-- El teléfono espera escondido bajo el borde del cuadro y sube al llegar (data-sube);
+                 después se mueve más lento que el scroll (paralaje, solo en escritorio). -->
             <div class="final-telefono" data-paralaje>
-                <div class="inclinado"><Telefono escala={0.82} pantallas={["recorrido"]} /></div>
+                <div data-sube>
+                    <div class="inclinado"><Telefono escala={0.82} pantallas={["recorrido"]} /></div>
+                </div>
             </div>
         </div>
     </div>
