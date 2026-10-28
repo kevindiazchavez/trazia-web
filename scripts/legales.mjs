@@ -30,7 +30,7 @@ const BACKEND = leer("BACKEND").replace(/\/+$/, "");
 const FRASES = {
     "eliminar-cuenta": "¿No recuerdas tu contraseña o necesitas ayuda? Escríbenos desde el correo de tu cuenta a %s y nosotros la borramos por ti.",
     privacidad: "Si tienes alguna pregunta sobre tus datos, o quieres pedir una copia de lo que guardamos sobre ti, escríbenos a %s.",
-    terminos: "Si tienes preguntas sobre estos términos, o crees que borramos algo por error, escríbenos a %s.",
+    terminos: "Si tienes preguntas sobre estos términos, o crees que eliminamos algo por error, escríbenos a %s.",
 };
 
 const escapar = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
