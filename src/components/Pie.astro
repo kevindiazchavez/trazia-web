@@ -1,5 +1,5 @@
 ---
-import { legales, CORREO } from "../config";
+import { legales } from "../config";
 
 /* Desde las páginas legales, los enlaces a las secciones vuelven a la portada. */
 interface Props {
@@ -18,7 +18,6 @@ const { base = "" } = Astro.props;
                 <a href={`${base}#descargar`}>Descargar</a>
             </nav>
         </div>
-        <p class="contacto">¿Dudas, una ruta que falta o trabajas en transporte? Escríbenos a <a href={`mailto:${CORREO}`}>{CORREO}</a>.</p>
         <div class="fila legal">
             <p>© {new Date().getFullYear()} Trazia · Hecho en El Salvador.</p>
             <ul>
@@ -39,8 +38,6 @@ const { base = "" } = Astro.props;
     nav a, ul a { display: inline-flex; align-items: center; min-height: 48px; }
     a { color: var(--suave); text-decoration: none; transition: opacity .2s; }
     nav a:hover, ul a:hover { opacity: .7; }
-    .contacto { margin: 0 0 8px; color: var(--suave); }
-    .contacto a { color: var(--verde-oscuro); text-decoration: underline; }
     .legal { border-top: 1px solid var(--borde); color: var(--tenue); }
     .legal p { margin: 0; }
     ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 24px; }

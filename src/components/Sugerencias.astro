@@ -1,0 +1,34 @@
+---
+import { CORREO } from "../config";
+---
+<section class="sugerencias" aria-labelledby="sugerencias-titulo">
+    <div class="contenido">
+        <div class="tarjeta" data-revela>
+            <span class="icono" aria-hidden="true"><svg class="ic"><use href="#i-chat" /></svg></span>
+            <div class="texto">
+                <h2 id="sugerencias-titulo">¿Conoces una ruta que <em>nos falta?</em></h2>
+                <p>¿Alguna ruta ya no existe, cambió su recorrido o conoces una que todavía no aparece en Trazia? ¿Tienes alguna sugerencia para mejorar la app? ¡Cuéntanos!</p>
+                <p class="correo">Escríbenos a: <a href={`mailto:${CORREO}`}>{CORREO}</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .sugerencias { padding: 0 0 80px; }
+    .tarjeta {
+        display: flex; align-items: flex-start; gap: 24px;
+        padding: 40px 48px; border-radius: 28px; background: var(--acento-claro); border: 1px solid var(--borde);
+    }
+    .icono { display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: 50%; background: var(--oscuro); color: #fff; }
+    h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+    p { margin: 14px 0 0; max-width: 62ch; color: var(--suave); line-height: 1.55; }
+    .correo { color: var(--texto); font-weight: 600; }
+    .correo a { color: var(--verde-oscuro); text-decoration: underline; overflow-wrap: anywhere; }
+
+    @media (max-width: 620px) {
+        .sugerencias { padding-bottom: 56px; }
+        .tarjeta { flex-direction: column; gap: 18px; padding: 28px 22px; }
+        .icono { width: 48px; height: 48px; }
+    }
+</style>
