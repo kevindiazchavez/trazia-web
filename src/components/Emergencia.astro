@@ -8,9 +8,9 @@
 import Telefono from "./Telefono.astro";
 
 const puntos = [
-    { icono: "i-llamada", titulo: "Acceso rápido a emergencias", texto: "Llamá al número de emergencias sin tener que buscarlo." },
-    { icono: "i-lugar", titulo: "Tu ubicación a mano", texto: "Consultá tu ubicación para compartirla con quien te atienda." },
-    { icono: "i-persona", titulo: "Vos decidís cuándo llamar", texto: "Trazia facilita el acceso a la llamada, pero no sustituye los servicios de emergencia." },
+    { icono: "i-llamada", titulo: "Acceso rápido a emergencias", texto: "Llama al número de emergencias sin tener que buscarlo." },
+    { icono: "i-lugar", titulo: "Tu ubicación a mano", texto: "Consulta tu ubicación para compartirla con quien te atienda." },
+    { icono: "i-persona", titulo: "Tú decides cuándo llamar", texto: "Trazia facilita el acceso a la llamada, pero no sustituye los servicios de emergencia." },
 ];
 ---
 <section class="emergencia" id="emergencia">
@@ -18,8 +18,8 @@ const puntos = [
         <div class="panel">
             <div class="texto">
                 <p class="previa" data-revela>Tu seguridad también importa</p>
-                <h2 data-revela>Viajá con una opción de <em>ayuda disponible.</em></h2>
-                <p class="bajada" data-revela>Si ocurre una emergencia durante tu recorrido, encontrá en Trazia una forma rápida de iniciar una llamada de emergencia.</p>
+                <h2 data-revela>Viaja con una opción de <em>ayuda disponible.</em></h2>
+                <p class="bajada" data-revela>Si ocurre una emergencia durante tu recorrido, encuentra en Trazia una forma rápida de iniciar una llamada de emergencia.</p>
                 <ul class="puntos" data-revela-grupo="0.15">
                     {puntos.map((p) => (
                         <li>

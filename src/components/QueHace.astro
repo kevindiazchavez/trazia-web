@@ -3,13 +3,13 @@ import Telefono from "./Telefono.astro";
 
 const extras = [
     { icono: "i-mapa", titulo: "874 rutas", texto: "Del área metropolitana y del interior del país, con sus paradas y su recorrido." },
-    { icono: "i-reloj", titulo: "Costo total y tiempo", texto: "Antes de salir sabés cuánto vas a pagar en total y cuánto te va a tomar el viaje." },
+    { icono: "i-reloj", titulo: "Costo total y tiempo", texto: "Antes de salir sabes cuánto vas a pagar en total y cuánto te va a tomar el viaje." },
 ];
 // El viaje encadenado de la segunda tarjeta (el de las capturas de la app).
 const cadena = [
-    { tipo: "bus", ruta: "44", color: "var(--neon)", texto: "Subí en Metrocentro" },
-    { tipo: "pie", texto: "Caminá 460 m hasta el otro bus" },
-    { tipo: "bus", ruta: "102A", color: "#22d3ee", texto: "Bajate en el Puerto de La Libertad" },
+    { tipo: "bus", ruta: "44", color: "var(--neon)", texto: "Sube en Metrocentro" },
+    { tipo: "pie", texto: "Camina 460 m hasta el otro bus" },
+    { tipo: "bus", ruta: "102A", color: "#22d3ee", texto: "Bájate en el Puerto de La Libertad" },
 ];
 ---
 <section class="seccion" id="que-hace">
@@ -51,8 +51,8 @@ const cadena = [
             <li class="elevable">
                 <article class="tarjeta tono-mapa">
                     <span class="tarjeta-icono"><svg class="ic" aria-hidden="true"><use href="#i-lugar" /></svg></span>
-                    <h3>Seguilo en el mapa</h3>
-                    <p>El recorrido se dibuja con las paradas marcadas, para que sepás cuándo te toca bajar.</p>
+                    <h3>Síguelo en el mapa</h3>
+                    <p>El recorrido se dibuja con las paradas marcadas, para que sepas cuándo te toca bajar.</p>
                     <div class="visual mapita" aria-hidden="true">
                         <svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice">
                             <rect width="300" height="200" class="mm-fondo" />

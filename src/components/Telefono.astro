@@ -6,7 +6,7 @@
  *
  * `pantallas` dice qué se ve: una sola, o varias apiladas (la primera visible)
  * que animations.ts va cambiando (data-vista), como en "Cómo funciona".
- *   inicio       el inicio: saludo, buscador, "Cerca de vos", "La comunidad hoy"
+ *   inicio       el inicio: saludo, buscador, "Cerca de ti", "La comunidad hoy"
  *   opciones     el mapa con el viaje y la hoja de "Viajes encontrados";
  *                la ruta se dibuja y el bus la recorre (data-tel-ruta, data-tel-bus)
  *   itinerario   el viaje elegido, tramo por tramo
@@ -29,14 +29,14 @@ const RUTA = "M206 168 C196 170 186 172 178 178 C168 186 160 192 150 198 C132 20
 const comunidad = [
     { icono: "i-alerta", color: "var(--averia)", fondo: "rgba(245, 158, 11, .16)", valor: "12", texto: "Reportes de hoy" },
     { icono: "i-velocimetro", color: "var(--verde)", fondo: "rgba(58, 176, 79, .16)", valor: "3", texto: "Alertas activas" },
-    { icono: "i-direcciones", color: "var(--desvio)", fondo: "rgba(59, 130, 246, .18)", valor: "2", texto: "Rutas que seguís" },
+    { icono: "i-direcciones", color: "var(--desvio)", fondo: "rgba(59, 130, 246, .18)", valor: "2", texto: "Rutas que sigues" },
 ];
 const tramos = [
-    { tipo: "pie", etiqueta: "A pie", dato: "4 min", texto: "Caminá 364 m" },
-    { tipo: "bus", etiqueta: "Bus", dato: "12 min", precio: "$0.25", texto: "Subí a la Ruta 44" },
-    { tipo: "parada", etiqueta: "Parada", texto: "Bajate de la Ruta 44", detalle: "5,1 km · 12 min" },
-    { tipo: "pie", etiqueta: "Transbordo", texto: "Caminá 460 m al siguiente bus" },
-    { tipo: "bus", etiqueta: "Bus", dato: "48 min", precio: "$1.50", texto: "Subí a la Ruta 102A" },
+    { tipo: "pie", etiqueta: "A pie", dato: "4 min", texto: "Camina 364 m" },
+    { tipo: "bus", etiqueta: "Bus", dato: "12 min", precio: "$0.25", texto: "Sube a la Ruta 44" },
+    { tipo: "parada", etiqueta: "Parada", texto: "Bájate de la Ruta 44", detalle: "5,1 km · 12 min" },
+    { tipo: "pie", etiqueta: "Transbordo", texto: "Camina 460 m al siguiente bus" },
+    { tipo: "bus", etiqueta: "Bus", dato: "48 min", precio: "$1.50", texto: "Sube a la Ruta 102A" },
 ];
 // Las paradas marcadas sobre la ruta, en la pantalla del recorrido.
 const paradas = [[188, 173], [150, 198], [118, 216], [100, 244], [94, 270], [84, 292]];
@@ -65,7 +65,7 @@ const paradas = [[188, 173], [150, 198], [118, 216], [100, 244], [94, 270], [84,
                             </div>
                             <p class="pregunta">¿A dónde vas?</p>
                             <div class="buscador"><span>Buscar rutas y transbordos</span><i><svg class="ic"><use href="#i-buscar" /></svg></i></div>
-                            <p class="seccion-app"><svg class="ic"><use href="#i-lugar" /></svg>Cerca de vos</p>
+                            <p class="seccion-app"><svg class="ic"><use href="#i-lugar" /></svg>Cerca de ti</p>
                             <div class="mini-mapa">
                                 <svg viewBox="0 0 242 92" preserveAspectRatio="xMidYMid slice">
                                     <rect width="242" height="92" class="m-fondo" />
@@ -216,7 +216,7 @@ const paradas = [[188, 173], [150, 198], [118, 216], [100, 244], [94, 270], [84,
                                 <div class="opcion-fila"><p class="hoja-titulo">Ruta 44 + Ruta 102A</p><span class="precio">$1.75</span></div>
                                 <div class="siguiente">
                                     <i><svg class="ic"><use href="#i-bus" /></svg></i>
-                                    <div>Bajate de la Ruta 44<small>En la parada marcada en Santa Tecla</small></div>
+                                    <div>Bájate de la Ruta 44<small>En la parada marcada en Santa Tecla</small></div>
                                 </div>
                             </div>
                         </>
