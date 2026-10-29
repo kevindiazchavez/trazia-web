@@ -1,15 +1,16 @@
 ---
-import { legales } from "../config";
+import { legales, REDES } from "../config";
 
 /* Desde las páginas legales, los enlaces a las secciones vuelven a la portada. */
 interface Props {
     base?: string;
 }
 const { base = "" } = Astro.props;
+const redes = REDES.filter((r) => r.url);
 ---
 <footer class="pie">
     <div class="contenido">
-        <div class="fila">
+        <div class="fila arriba">
             <a class="marca" href={`${base}#inicio`}><img src="/marca/trazia-logo-128.png" alt="" width="34" height="34">Trazia</a>
             <nav aria-label="Secciones">
                 <a href={`${base}#que-hace`}>Qué hace</a>
@@ -17,6 +18,13 @@ const { base = "" } = Astro.props;
                 <a href={`${base}#emergencia`}>Botón de emergencia</a>
                 <a href={`${base}#descargar`}>Descargar</a>
             </nav>
+            {redes.length > 0 && (
+                <ul class="redes">
+                    {redes.map((r) => (
+                        <li><a href={r.url} target="_blank" rel="noopener" aria-label={`Trazia en ${r.nombre}`}><svg class="ic" aria-hidden="true"><use href={`#${r.icono}`} /></svg></a></li>
+                    ))}
+                </ul>
+            )}
         </div>
         <div class="fila legal">
             <p>© {new Date().getFullYear()} Trazia · Hecho en El Salvador.</p>
@@ -32,13 +40,31 @@ const { base = "" } = Astro.props;
 <style>
     .pie { padding: 20px 0 max(40px, env(safe-area-inset-bottom)); font-size: .92rem; }
     .fila { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 40px; padding: 24px 0; }
-    .marca { display: inline-flex; align-items: center; min-height: 48px; gap: 10px; color: var(--texto); text-decoration: none; font-weight: 800; font-size: 1.25rem; letter-spacing: -.02em; }
+    /* Arriba: logo a la izquierda, secciones al centro y redes a la derecha. */
+    .arriba { display: grid; grid-template-columns: 1fr auto 1fr; }
+    .marca { justify-self: start; display: inline-flex; align-items: center; min-height: 48px; gap: 10px; color: var(--texto); text-decoration: none; font-weight: 800; font-size: 1.25rem; letter-spacing: -.02em; }
     .marca img { width: 34px; height: 34px; border-radius: 50%; }
-    nav { display: flex; flex-wrap: wrap; gap: 0 28px; }
+    nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 32px; }
+    nav a { color: var(--texto); font-weight: 600; }
     nav a, ul a { display: inline-flex; align-items: center; min-height: 48px; }
     a { color: var(--suave); text-decoration: none; transition: opacity .2s; }
     nav a:hover, ul a:hover { opacity: .7; }
+    ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 24px; }
+    .redes { justify-self: end; gap: 4px; }
+    .redes a { justify-content: center; width: 48px; }
+    .redes a:hover { opacity: 1; }
+    .redes .ic { box-sizing: content-box; width: 20px; height: 20px; padding: 9px; border-radius: 50%; background: var(--oscuro); color: #fff; transition: background .2s; }
+    .redes a:hover .ic { background: var(--verde-marca); }
     .legal { border-top: 1px solid var(--borde); color: var(--tenue); }
     .legal p { margin: 0; }
-    ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 24px; }
+
+    @media (max-width: 960px) {
+        .arriba { grid-template-columns: 1fr auto; }
+        nav { grid-column: 1 / -1; grid-row: 2; justify-content: flex-start; }
+    }
+    @media (max-width: 620px) {
+        .arriba { grid-template-columns: 1fr; }
+        .redes { justify-self: start; margin-left: -9px; }
+        nav { grid-row: auto; gap: 0 28px; }
+    }
 </style>

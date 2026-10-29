@@ -23,6 +23,17 @@ export const PLAY_URL = "";
  */
 export const CORREO = "soporte.trazia@gmail.com";
 
+/*
+ * Las redes sociales del pie, en orden: primero donde más se contesta.
+ * Una red sin enlace no se muestra.
+ */
+export const REDES = [
+    { nombre: "TikTok", icono: "i-tiktok", url: "https://www.tiktok.com/@trazia.app" },
+    { nombre: "Instagram", icono: "i-instagram", url: "https://www.instagram.com/trazia.app/" },
+    { nombre: "Facebook", icono: "i-facebook", url: "" }, // TODO: la dirección fija de la página (facebook.com/...).
+    { nombre: "X", icono: "i-x", url: "https://x.com/traziaaa" },
+];
+
 /* Las páginas legales: las genera scripts/legales.mjs a partir de legales/. */
 export const legales = {
     privacidad: "/privacidad.html",
