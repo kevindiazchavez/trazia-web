@@ -3,7 +3,7 @@ import Telefono from "./Telefono.astro";
 
 const extras = [
     { icono: "i-mapa", titulo: "874 rutas", texto: "Del área metropolitana y del interior del país, con sus paradas y su recorrido." },
-    { icono: "i-reloj", titulo: "Costo total y tiempo", texto: "Antes de salir sabes cuánto vas a pagar en total y cuánto te va a tomar el viaje." },
+    { icono: "i-reloj", titulo: "Costo y tiempo estimados", texto: "Antes de salir tienes un estimado de cuánto vas a pagar en total y cuánto te va a tomar el viaje." },
 ];
 // El viaje encadenado de la segunda tarjeta (el de las capturas de la app).
 const cadena = [
@@ -27,7 +27,7 @@ const cadena = [
                 <article class="tarjeta">
                     <span class="tarjeta-icono"><svg class="ic" aria-hidden="true"><use href="#i-direcciones" /></svg></span>
                     <h3>Tu viaje completo</h3>
-                    <p>Qué buses tomar, en qué parada subirte, dónde bajarte, cuánto vas a tardar y cuánto vas a pagar en total.</p>
+                    <p>Qué buses tomar, en qué parada subirte, dónde bajarte, y un estimado del tiempo y de lo que vas a pagar.</p>
                     <div class="visual visual-telefono"><Telefono escala={0.72} pantallas={["itinerario"]} /></div>
                 </article>
             </li>
